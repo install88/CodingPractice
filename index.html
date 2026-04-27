@@ -1,0 +1,2574 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Senior Java Backend Interview Prep V2</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b0f14;
+      --panel: #121821;
+      --panel-2: #161f2b;
+      --border: #263241;
+      --text: #eef4fb;
+      --muted: #93a4b8;
+      --soft: #c9d6e2;
+      --google: #6ea8fe;
+      --nvidia: #8dd65f;
+      --tsmc: #f2b84b;
+      --java: #e66c5c;
+      --system: #b897ff;
+      --english: #66d9e8;
+      --good: #52d273;
+      --warn: #ffd166;
+      --danger: #ff6b7a;
+      --radius: 8px;
+      --shadow: 0 18px 45px rgba(0, 0, 0, 0.22);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        linear-gradient(180deg, rgba(18, 24, 33, 0.94), rgba(11, 15, 20, 0.98)),
+        radial-gradient(circle at top left, rgba(110, 168, 254, 0.12), transparent 34%),
+        var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", "PingFang TC", sans-serif;
+      line-height: 1.55;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; }
+    button, input, textarea, select { font: inherit; }
+    button {
+      border: 1px solid var(--border);
+      background: #1b2431;
+      color: var(--text);
+      border-radius: 6px;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+    button:hover { border-color: #53677e; background: #212d3c; }
+    input, textarea {
+      background: #0e141c;
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 6px;
+    }
+    input { padding: 8px 10px; }
+    textarea {
+      width: 100%;
+      min-height: 170px;
+      resize: vertical;
+      padding: 12px;
+      line-height: 1.55;
+    }
+
+    .app { width: 100%; max-width: 1224px; min-width: 0; margin: 0 auto; padding: 22px; }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+    .brand h1 {
+      margin: 0;
+      font-size: clamp(1.45rem, 3vw, 2.1rem);
+      letter-spacing: 0;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      white-space: normal;
+      line-height: 1.15;
+    }
+    .brand p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      max-width: 780px;
+      font-size: 0.94rem;
+      overflow-wrap: anywhere;
+    }
+    .date-tools {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+      min-width: 250px;
+    }
+
+    .hero {
+      background: linear-gradient(145deg, rgba(22, 31, 43, 0.96), rgba(18, 24, 33, 0.98));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.35fr 0.65fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+    .phase-kicker {
+      color: var(--muted);
+      text-transform: uppercase;
+      font-size: 0.74rem;
+      letter-spacing: 0.08em;
+      font-weight: 800;
+      margin-bottom: 7px;
+    }
+    .phase-title {
+      margin: 0;
+      font-size: clamp(1.1rem, 2.2vw, 1.55rem);
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      white-space: normal;
+    }
+    .phase-desc { margin: 8px 0 14px; color: var(--soft); }
+    .chips { display: flex; gap: 7px; flex-wrap: wrap; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 4px 9px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--soft);
+      background: rgba(255, 255, 255, 0.03);
+      white-space: nowrap;
+    }
+    .chip.google { color: var(--google); border-color: rgba(110, 168, 254, 0.35); background: rgba(110, 168, 254, 0.10); }
+    .chip.nvidia { color: var(--nvidia); border-color: rgba(141, 214, 95, 0.35); background: rgba(141, 214, 95, 0.10); }
+    .chip.tsmc { color: var(--tsmc); border-color: rgba(242, 184, 75, 0.38); background: rgba(242, 184, 75, 0.10); }
+    .chip.java { color: var(--java); border-color: rgba(230, 108, 92, 0.35); background: rgba(230, 108, 92, 0.10); }
+    .chip.system { color: var(--system); border-color: rgba(184, 151, 255, 0.35); background: rgba(184, 151, 255, 0.10); }
+    .chip.english { color: var(--english); border-color: rgba(102, 217, 232, 0.35); background: rgba(102, 217, 232, 0.10); }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .stat {
+      border: 1px solid var(--border);
+      background: rgba(11, 15, 20, 0.46);
+      border-radius: var(--radius);
+      padding: 13px;
+      min-height: 86px;
+    }
+    .stat .num { font-size: 1.55rem; font-weight: 900; line-height: 1; }
+    .stat .label { margin-top: 6px; color: var(--muted); font-size: 0.8rem; }
+
+    .progress-wrap { margin-top: 16px; }
+    .progress-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 0.84rem;
+      margin-bottom: 7px;
+    }
+    .progress-track {
+      height: 9px;
+      border-radius: 999px;
+      background: #263241;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--google), var(--nvidia), var(--tsmc));
+      transition: width 0.25s ease;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.85fr);
+      gap: 18px;
+      align-items: start;
+    }
+    .panel {
+      background: rgba(18, 24, 33, 0.96);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 18px;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
+      min-width: 0;
+    }
+    .panel h2, .panel h3 {
+      margin: 0 0 10px;
+      letter-spacing: 0;
+    }
+    .panel h2 { font-size: 1.08rem; }
+    .panel h3 { font-size: 0.98rem; }
+    .panel-sub {
+      color: var(--muted);
+      font-size: 0.88rem;
+      margin: -4px 0 13px;
+    }
+
+    .task {
+      border: 1px solid var(--border);
+      background: var(--panel-2);
+      border-radius: var(--radius);
+      padding: 13px;
+      display: grid;
+      grid-template-columns: 26px minmax(0, 1fr);
+      gap: 11px;
+      margin-bottom: 10px;
+      min-width: 0;
+    }
+    .task > div { min-width: 0; }
+    .task.done { opacity: 0.58; }
+    .task.done .task-title, .task.done .task-detail, .task.done .deliverable { text-decoration: line-through; }
+    .task input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      margin: 3px 0 0;
+      accent-color: var(--good);
+      cursor: pointer;
+    }
+    .task-meta {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+    .pill {
+      border-radius: 5px;
+      padding: 2px 7px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--muted);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 0.72rem;
+      font-weight: 800;
+    }
+    .pill.google { color: var(--google); }
+    .pill.nvidia { color: var(--nvidia); }
+    .pill.tsmc { color: var(--tsmc); }
+    .pill.java { color: var(--java); }
+    .pill.system { color: var(--system); }
+    .pill.english { color: var(--english); }
+    .task-title {
+      font-weight: 900;
+      margin-bottom: 5px;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      white-space: normal;
+    }
+    .task-detail, .deliverable {
+      color: var(--soft);
+      font-size: 0.9rem;
+      white-space: pre-line;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .deliverable {
+      color: #dce8f5;
+      margin-top: 7px;
+      padding-left: 9px;
+      border-left: 3px solid rgba(255, 255, 255, 0.12);
+    }
+    .task-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 10px;
+    }
+    .task-links a, .source-list a, .priority-list a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 5px 9px;
+      text-decoration: none;
+      color: var(--text);
+      background: #111923;
+      font-size: 0.8rem;
+      font-weight: 800;
+    }
+    .task-links a:hover, .source-list a:hover, .priority-list a:hover { border-color: #60748c; }
+
+    .demo {
+      margin-top: 10px;
+      border: 1px solid rgba(102, 217, 232, 0.25);
+      background: rgba(102, 217, 232, 0.07);
+      border-radius: var(--radius);
+      padding: 9px 10px;
+    }
+    .demo summary {
+      cursor: pointer;
+      color: var(--english);
+      font-weight: 900;
+      font-size: 0.84rem;
+    }
+    .demo pre {
+      margin: 9px 0 0;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      color: #e7fbff;
+      font-family: inherit;
+      font-size: 0.86rem;
+      line-height: 1.65;
+    }
+
+    .done-banner {
+      display: none;
+      border: 1px solid rgba(82, 210, 115, 0.38);
+      background: rgba(82, 210, 115, 0.10);
+      color: #d8ffe2;
+      border-radius: var(--radius);
+      padding: 14px;
+      margin-top: 10px;
+      font-weight: 800;
+    }
+    .done-banner.show { display: block; }
+
+    .score-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px;
+    }
+    .score-item {
+      border: 1px solid var(--border);
+      background: #101720;
+      border-radius: var(--radius);
+      padding: 10px;
+    }
+    .score-item label {
+      display: block;
+      color: var(--muted);
+      font-size: 0.76rem;
+      margin-bottom: 5px;
+      font-weight: 800;
+    }
+    .score-item input { width: 100%; }
+
+    .weak-add { display: flex; gap: 8px; margin-bottom: 10px; }
+    .weak-add input { min-width: 0; flex: 1; }
+    .weak-item {
+      display: grid;
+      grid-template-columns: 22px minmax(0, 1fr);
+      gap: 8px;
+      align-items: start;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--soft);
+      font-size: 0.9rem;
+    }
+    .weak-item input { width: 18px; height: 18px; accent-color: var(--good); }
+    .weak-item.done span { text-decoration: line-through; color: var(--muted); }
+
+    .priority-list {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .priority-card {
+      border: 1px solid var(--border);
+      background: var(--panel-2);
+      border-radius: var(--radius);
+      padding: 13px;
+      min-width: 0;
+    }
+    .brand, .hero, .phase-desc, .source { min-width: 0; overflow-wrap: anywhere; }
+    .priority-card h3 { margin-bottom: 7px; }
+    .priority-card ul {
+      padding-left: 18px;
+      margin: 8px 0 0;
+      color: var(--soft);
+      font-size: 0.88rem;
+    }
+    .priority-card li { margin: 6px 0; }
+
+    .week-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.86rem;
+    }
+    .week-table th, .week-table td {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 9px 7px;
+      text-align: left;
+      vertical-align: top;
+    }
+    .week-table th { color: var(--muted); font-size: 0.76rem; text-transform: uppercase; }
+
+    .source-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px;
+    }
+    .source {
+      border: 1px solid var(--border);
+      background: #101720;
+      border-radius: var(--radius);
+      padding: 11px;
+    }
+    .source b { display: block; margin-bottom: 5px; }
+    .source p { margin: 0 0 8px; color: var(--muted); font-size: 0.84rem; }
+
+    .notice {
+      border: 1px solid rgba(255, 209, 102, 0.35);
+      background: rgba(255, 209, 102, 0.09);
+      color: #ffe8a8;
+      border-radius: var(--radius);
+      padding: 12px;
+      font-size: 0.88rem;
+      margin-bottom: 14px;
+    }
+    .copy-row { display: flex; gap: 8px; justify-content: space-between; align-items: center; margin-top: 9px; flex-wrap: wrap; }
+    .small { color: var(--muted); font-size: 0.8rem; }
+    .hidden { display: none !important; }
+    .auth-shell {
+      width: 100%;
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 48px 22px 24px;
+    }
+    .auth-card {
+      background: rgba(18, 24, 33, 0.97);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+    .auth-grid {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .auth-grid label {
+      display: grid;
+      gap: 6px;
+      color: var(--soft);
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+    .auth-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 16px;
+    }
+    .auth-tabs, .nav-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .auth-tabs { margin-top: 18px; }
+    .auth-tab, .nav-tab {
+      border: 1px solid var(--border);
+      background: #111923;
+      color: var(--muted);
+      font-weight: 800;
+    }
+    .auth-tab.active, .nav-tab.active {
+      color: var(--text);
+      border-color: rgba(110, 168, 254, 0.35);
+      background: rgba(110, 168, 254, 0.12);
+    }
+    .inline-note {
+      margin-top: 14px;
+      border: 1px solid rgba(255, 209, 102, 0.28);
+      background: rgba(255, 209, 102, 0.08);
+      border-radius: var(--radius);
+      padding: 12px;
+      color: #ffe8a8;
+      font-size: 0.88rem;
+    }
+    .danger-note {
+      margin-top: 12px;
+      border: 1px solid rgba(255, 107, 122, 0.28);
+      background: rgba(255, 107, 122, 0.08);
+      border-radius: var(--radius);
+      padding: 12px;
+      color: #ffd8de;
+      font-size: 0.88rem;
+    }
+    .user-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--soft);
+      font-size: 0.82rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .user-pill .role {
+      color: var(--english);
+      font-size: 0.76rem;
+    }
+    .users-tools {
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      background: #101720;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      color: var(--text);
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      transition: 0.18s ease;
+      box-shadow: var(--shadow);
+      z-index: 10;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 920px) {
+      body { padding: 0; }
+      .app { padding: 14px; }
+      .topbar, .hero-grid, .layout { grid-template-columns: 1fr; display: grid; }
+      .date-tools { justify-content: flex-start; min-width: 0; }
+      .priority-list, .source-list { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 560px) {
+      .stats, .score-grid { grid-template-columns: 1fr; }
+      .task { grid-template-columns: 24px minmax(0, 1fr); padding: 11px; }
+      .hero, .panel { padding: 13px; }
+      .brand, .brand h1, .brand p { max-width: calc(100vw - 28px); }
+      .brand h1 { font-size: 1.18rem; }
+      .phase-title, .phase-desc, .chips { width: 330px; max-width: 100%; }
+      .task > div { width: 280px; max-width: 100%; }
+      .task-title, .task-detail, .deliverable { max-width: 100%; }
+      .week-table { font-size: 0.8rem; }
+      .week-table th, .week-table td { padding: 8px 4px; }
+    }
+  </style>
+</head>
+<body>
+<section class="auth-shell" id="authShell">
+  <div class="auth-card">
+    <div class="brand">
+      <h1>Interview Prep Login</h1>
+      <p>先登入，再跨裝置接續你的卡片進度。第一個註冊成功的帳號會自動成為 admin。</p>
+    </div>
+    <div class="auth-tabs">
+      <button id="loginTabBtn" class="auth-tab active" type="button">登入</button>
+      <button id="registerTabBtn" class="auth-tab" type="button">建立使用者</button>
+    </div>
+
+    <form id="loginForm" class="auth-grid">
+      <label>Username
+        <input id="loginUsername" type="text" autocomplete="username" placeholder="例如：weiZheng">
+      </label>
+      <label>Password
+        <input id="loginPassword" type="password" autocomplete="current-password" placeholder="輸入密碼">
+      </label>
+      <div class="auth-actions">
+        <button type="submit">登入</button>
+        <span class="small" id="authStatus">尚未登入。</span>
+      </div>
+    </form>
+
+    <form id="registerForm" class="auth-grid hidden">
+      <label>Username
+        <input id="registerUsername" type="text" autocomplete="username" placeholder="例如：weiZheng">
+      </label>
+      <label>Password
+        <input id="registerPassword" type="password" autocomplete="new-password" placeholder="至少 8 碼">
+      </label>
+      <div class="auth-actions">
+        <button type="submit">建立帳號</button>
+        <span class="small" id="registerStatus">建立後就能直接登入並同步進度。</span>
+      </div>
+    </form>
+
+    <div class="inline-note">
+      這個版本會用 username 包裝 Supabase 的 email/password 登入，所以 Supabase 的 Email Provider 必須把 <b>Confirm Email</b> 關掉，不然新帳號會卡在無法登入。
+    </div>
+    <div class="danger-note hidden" id="authErrorBox"></div>
+  </div>
+</section>
+
+<main class="app hidden" id="appShell">
+  <header class="topbar">
+    <div class="brand">
+      <h1>Senior Java Backend Interview Prep V2</h1>
+      <p>Google / NVIDIA / 台積電 IT 每日作業制。主軸改成寫程式、聽講解、做短筆記；先不要自己口說。</p>
+    </div>
+    <div class="date-tools" aria-label="卡片工具">
+      <div class="nav-tabs">
+        <button id="viewBoardBtn" class="nav-tab active" type="button">我的進度</button>
+        <button id="viewUsersBtn" class="nav-tab" type="button">所有使用者</button>
+      </div>
+      <div class="user-pill" id="userPill">未登入</div>
+      <button id="logoutBtn" type="button">登出</button>
+      <input id="cardPicker" type="number" min="1" aria-label="選擇卡號" placeholder="卡號">
+      <button id="prevBtn" type="button">上一張</button>
+      <button id="nextTodoBtn" type="button">下一張未完成</button>
+    </div>
+  </header>
+
+  <div id="boardView">
+  <section class="hero">
+    <div class="hero-grid">
+      <div>
+        <div class="phase-kicker" id="dateLabel">Loading</div>
+        <h2 class="phase-title" id="phaseTitle">準備中</h2>
+        <p class="phase-desc" id="phaseDesc"></p>
+        <div class="chips" id="weekChips"></div>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="num" id="todayDone">0/0</div><div class="label">總完成卡數</div></div>
+        <div class="stat"><div class="num" id="streakNum">0</div><div class="label">目前卡號</div></div>
+        <div class="stat"><div class="num" id="weekNum">-</div><div class="label">來源週次</div></div>
+        <div class="stat"><div class="num" id="daysLeft">-</div><div class="label">剩餘卡數</div></div>
+      </div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-head"><span id="progressLabel">整體進度</span><span id="progressPct">0%</span></div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+  </section>
+
+  <div class="layout">
+    <section>
+      <section class="panel">
+        <h2 id="taskTitle">目前卡片</h2>
+        <p class="panel-sub" id="taskSub"></p>
+        <div id="taskList"></div>
+        <div class="done-banner" id="doneBanner">今天的作業完成了。明天回來照下一張卡走就好。</div>
+      </section>
+
+      <section class="panel">
+        <h2>卡片隊列</h2>
+        <p class="panel-sub">你不用切日期。做完目前卡片後，直接往下一張走。</p>
+        <div id="weekOverview"></div>
+      </section>
+
+      <section class="panel">
+        <h2>已完成清單</h2>
+        <p class="panel-sub">這裡會列出你目前做完的所有卡片。先用卡號順序整理，之後若你要，我們再補完成時間。</p>
+        <div id="completedList"></div>
+      </section>
+
+      <section class="panel">
+        <h2>面試題優先清單</h2>
+        <p class="panel-sub">根據官方職缺訊號、公開面經與 senior backend 常見考點整理；不是保證題庫，但很值得優先練。</p>
+        <div class="priority-list" id="priorityList"></div>
+      </section>
+
+      <section class="panel">
+        <h2>聽講解教材清單</h2>
+        <p class="panel-sub">每天任務會附對應連結；這裡是固定教材池。先聽懂別人怎麼拆題、怎麼講架構，不做自我口說。</p>
+        <div class="priority-list" id="listeningResources"></div>
+      </section>
+    </section>
+
+    <aside>
+      <section class="panel">
+        <h2>每週 Review 分數表</h2>
+        <p class="panel-sub">週六填一次；低於目標的項目會進弱點清單。</p>
+        <div class="score-grid" id="scoreGrid"></div>
+      </section>
+
+      <section class="panel">
+        <h2>進度檔</h2>
+        <p class="panel-sub">把完成卡號、弱點清單、每週分數匯出成 JSON。之後換電腦、重灌瀏覽器，或從 GitHub `git pull` 更新內容後，都可以再匯入接著做。</p>
+        <div class="copy-row">
+          <button id="exportProgressBtn" type="button">匯出進度 JSON</button>
+          <button id="importProgressBtn" type="button">匯入進度 JSON</button>
+        </div>
+        <input id="progressFileInput" type="file" accept="application/json,.json" hidden>
+        <p class="small" id="progressStatus">建議每次更新專案前先匯出一次，檔名可用 `progress.local.json`。</p>
+      </section>
+
+      <section class="panel">
+        <h2>弱點回補清單</h2>
+        <p class="panel-sub">任何卡住、聽不懂、重複錯的點都丟進來，週末清掉。</p>
+        <div class="weak-add">
+          <input id="weakInput" type="text" placeholder="例如：topological sort 聽不懂">
+          <button id="addWeakBtn" type="button">新增</button>
+        </div>
+        <div id="weakList"></div>
+        <div class="copy-row">
+          <button id="clearWeakBtn" type="button">清除已完成</button>
+          <span class="small" id="weakCount"></span>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>NotebookLM / Gemini Podcast Prompt</h2>
+        <p class="panel-sub">每週五或週日使用。把 prompt 和本週筆記丟進 NotebookLM 或 Gemini Audio Overview，產生英文聽力教材。</p>
+        <textarea id="podcastPrompt" readonly></textarea>
+        <div class="copy-row">
+          <button id="copyPodcastBtn" type="button">複製 prompt</button>
+          <span class="small" id="copyStatus">Podcast 是用來聽講解與複習，不需要自己錄音。</span>
+        </div>
+      </section>
+    </aside>
+  </div>
+
+  <section class="panel">
+    <h2>研究來源與更新日</h2>
+    <div class="notice">資料更新日：2026-04-22。官方來源優先；公開面經只拿來推估題型，不當成確定題目。</div>
+    <div class="source-list" id="sourceList"></div>
+  </section>
+  </div>
+
+  <section class="panel hidden" id="usersView">
+    <div class="users-tools">
+      <div>
+        <h2 style="margin-bottom:4px;">所有使用者進度</h2>
+        <p class="panel-sub" style="margin:0;">這裡會顯示每位使用者目前完成幾張卡、目前卡號與最近同步時間。</p>
+      </div>
+      <button id="refreshUsersBtn" type="button">重新整理</button>
+    </div>
+    <div id="usersProgressTable"></div>
+  </section>
+</main>
+<div class="toast" id="toast">已更新</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SETUP_DAYS = [
+  {
+    date: "2026-04-22",
+    title: "暖身 Day 1：建立 baseline",
+    desc: "先量出現在的 coding、英文、system design 起點。",
+    tasks: [
+      task("coding", "Google", "Baseline coding：Two Sum + 3Sum", 35, "用 Java 完成 LeetCode #1 Two Sum，接著看 #15 3Sum 的講解或解法，不必硬寫完。", "提交 #1；寫下 #15 會卡住的原因與 edge case。", [{label:"Two Sum", url:"https://leetcode.com/problems/two-sum/"}, {label:"3Sum", url:"https://leetcode.com/problems/3sum/"}]),
+      task("english", "All", "聽講解 baseline：Two Sum / 3Sum", 20, "先聽別人怎麼拆題，不急著自己講。重點放在：如何釐清題目、選 HashMap / two pointers、怎麼說 complexity。", "交付：寫 5 行筆記：pattern、資料結構、edge case、time complexity、你聽到的一句好用英文。", [{label:"NeetCode Playlists", url:"https://www.youtube.com/@NeetCode/playlists"}]),
+      task("system", "Google", "System design baseline：URL shortener", 25, "只畫 requirements、API、資料表、read/write path、瓶頸，不查答案。", "留下 1 張圖或 10 行筆記，標出你最不確定的地方。", [{label:"Hello Interview", url:"https://www.hellointerview.com/learn/system-design/in-a-hurry/introduction"}]),
+      task("behavior", "All", "建立面試筆記格式", 10, "意思是建立一個你每天固定填的面試日誌。你不用寫長篇心得，只要每天記：今天做哪題、卡在哪、複雜度、練了哪句英文、明天要補什麼。", "交付：照下方範本建立一份每日筆記，之後每天複製同一個格式填。", [])
+    ]
+  },
+  {
+    date: "2026-04-23",
+    title: "暖身 Day 2：履歷與專案素材盤點",
+    desc: "資深面試的故事要先準備好，後面每天會逐步打磨。",
+    tasks: [
+      task("behavior", "All", "專案 inventory", 30, "列出 3 個最能代表你的後端專案：規模、你的角色、技術決策、事故或 trade-off。", "每個專案至少 5 bullets，包含量化結果。", []),
+      task("coding", "Google", "HashMap pattern：Group Anagrams", 30, "用 Java 寫 LeetCode #49，練習把 key 設計寫清楚。", "提交程式；英文寫出 time/space complexity。", [{label:"Group Anagrams", url:"https://leetcode.com/problems/group-anagrams/"}]),
+      task("java", "Google", "Java HashMap 內部原理", 20, "讀 HashMap bucket、resize、treeification；整理成短筆記。", "用中文 5 bullets + 英文 5 句話整理。", [{label:"Baeldung HashMap", url:"https://www.baeldung.com/java-hashmap-internals"}]),
+      task("english", "All", "聽別人怎麼講專案與設計", 10, "聽一段 system design 或 senior engineer mock，觀察對方怎麼從需求講到 trade-off。", "交付：摘 3 句你覺得可以學的英文句型。", [{label:"Hello Interview", url:"https://www.hellointerview.com/learn/system-design/in-a-hurry/introduction"}])
+    ]
+  },
+  {
+    date: "2026-04-24",
+    title: "暖身 Day 3：SQL / Python / TSMC IT 起點",
+    desc: "補上台積電 IT、Data Engineer、Engineering Data Analysis 會用到的資料能力。",
+    tasks: [
+      task("data", "TSMC", "SQL baseline：SQL50 前 3 題", 35, "完成 LeetCode SQL50 的 select / where / aggregate 入門題。", "每題寫出查詢目的與可能索引。", [{label:"LeetCode SQL50", url:"https://leetcode.com/studyplan/top-sql-50/"}]),
+      task("tsmc", "TSMC", "台積電 IT 組織理解", 20, "讀 TSID、ICSD、BSID、AAID，對應到智慧製造、雲端資安、企業系統、AI/工程資料分析。", "寫下你最可能投的 2 條路徑與理由。", [{label:"TSMC IT Careers", url:"https://www.tsmc.com/static/english/careers/it_career/index.html"}]),
+      task("java", "TSMC", "OOP / design pattern 快問快答", 20, "整理 Strategy、Factory、Template Method 在企業系統中的使用情境。", "用一個 calculator 或 pricing service 範例說明。", []),
+      task("english", "TSMC", "聽懂 TSMC IT / 製造資料語彙", 15, "閱讀 TSMC IT 官方頁，搭配 NotebookLM 產生 Audio Overview 來聽。重點聽懂 manufacturing data、reliability、cross-functional collaboration。", "交付：整理 8 個台積電 IT 相關英文詞彙與中文意思。", [{label:"TSMC IT Careers", url:"https://www.tsmc.com/static/english/careers/it_career/index.html"}, {label:"NotebookLM", url:"https://notebooklm.google.com/"}])
+    ]
+  },
+  {
+    date: "2026-04-25",
+    title: "暖身 Day 4：NVIDIA infra 與效能意識",
+    desc: "建立 NVIDIA 方向的語彙：Kubernetes、inference、latency、throughput、observability。",
+    tasks: [
+      task("coding", "NVIDIA", "Heap pattern：Top K Frequent Elements", 35, "用 Java 寫 LeetCode #347，練習 HashMap + heap / bucket sort trade-off。", "提交後寫下 2 種解法差異。", [{label:"Top K Frequent", url:"https://leetcode.com/problems/top-k-frequent-elements/"}]),
+      task("system", "NVIDIA", "NIM / inference service 概念", 25, "讀 NIM 頁面，抓出 optimized inference、Kubernetes、observability、low latency/high throughput。", "寫出 Java backend 如何呼叫 inference microservice 的高階流程。", [{label:"NVIDIA NIM", url:"https://developer.nvidia.com/nim"}]),
+      task("english", "NVIDIA", "聽懂 latency vs throughput", 20, "聽 NVIDIA / infra 類講解，重點放在 batching、queueing、timeout、metrics、GPU utilization。", "交付：寫 5 行聽力筆記；每行都要是一個你真的聽懂的技術點。", [{label:"NVIDIA Developer", url:"https://www.youtube.com/@NVIDIADeveloper/videos"}, {label:"NVIDIA NIM", url:"https://developer.nvidia.com/nim"}]),
+      task("behavior", "All", "STAR 故事 1", 10, "寫一個 production incident 或 performance bug 的 STAR 草稿。", "Action 佔 60%，Result 要有數字。", [])
+    ]
+  },
+  {
+    date: "2026-04-26",
+    title: "暖身 Day 5：正式開跑前校準",
+    desc: "把弱點放進清單，明天開始 16 週課綱。",
+    tasks: [
+      task("coding", "All", "錯題回補", 30, "重做本週最卡的一題，不看答案，最多 25 分鐘。", "記錄卡住點：pattern、Java API、邊界條件或英文表達。", []),
+      task("system", "Google", "URL shortener 補強", 25, "看一份參考解法後，修正自己的 API、資料模型、cache 與 rate limit。", "寫出 3 個你原本漏掉的 trade-off。", [{label:"Hello Interview", url:"https://www.hellointerview.com/learn/system-design/in-a-hurry/introduction"}]),
+      task("english", "All", "正式週聽力筆記模板", 20, "準備下週固定聽講解的筆記格式：problem、approach、data structure、trade-off、complexity、one sentence。", "交付：建立一份聽力筆記模板；之後每次聽影片都照這個格式填。", []),
+      task("behavior", "All", "弱點清單初始化", 15, "把最弱的 5 個點新增到右側弱點清單。", "每個弱點要能被下一週任務驗證。", [])
+    ]
+  }
+];
+
+const LINKS = {
+  sql50: "https://leetcode.com/studyplan/top-sql-50/",
+  hello: "https://www.hellointerview.com/learn/system-design/in-a-hurry/introduction",
+  interviewing: "https://interviewing.io/mocks",
+  googleCloudArch: "https://docs.cloud.google.com/architecture",
+  googleSre: "https://sre.google/sre-book/table-of-contents/",
+  tsmcIt: "https://www.tsmc.com/static/english/careers/it_career/index.html",
+  nvidiaHire: "https://www.nvidia.com/en-eu/about-nvidia/careers/how-we-hire/",
+  nvidiaNim: "https://developer.nvidia.com/nim",
+  nvidiaAutoscale: "https://developer.nvidia.com/blog/horizontal-autoscaling-of-nvidia-nim-microservices-on-kubernetes/",
+  notebook: "https://notebooklm.google.com/",
+  notebookAudio: "https://blog.google/innovation-and-ai/products/notebooklm-audio-overviews/",
+  googleGuide: "https://services.google.com/fh/files/misc/general_virtual_interviews_candidate_resource.pdf",
+  googleSenior: "https://www.google.com/about/careers/applications/jobs/results/77738617966863046-senior-software-engineer/",
+  baeldungHashMap: "https://www.baeldung.com/java-hashmap-internals",
+  baeldungJvm: "https://www.baeldung.com/jvm-garbage-collectors",
+  baeldungExecutor: "https://www.baeldung.com/java-executor-service-tutorial",
+  baeldungLocks: "https://www.baeldung.com/java-concurrent-locks",
+  baeldungJpa: "https://www.baeldung.com/spring-data-jpa-query",
+  springTx: "https://docs.spring.io/spring-framework/reference/data-access/transaction.html",
+  kafkaDocs: "https://kafka.apache.org/documentation/",
+  redisDocs: "https://redis.io/docs/latest/",
+  k8sDocs: "https://kubernetes.io/docs/concepts/",
+  prometheus: "https://prometheus.io/docs/introduction/overview/",
+  triton: "https://docs.nvidia.com/deeplearning/triton-inference-server/user-guide/docs/index.html"
+};
+
+const WEEKS = [
+  {
+    phase: "Phase 1：基礎診斷與高頻 pattern",
+    focus: "HashMap / Arrays / TSMC IT baseline",
+    companies: ["Google", "NVIDIA", "TSMC"],
+    coding: [
+      c("Google", "LeetCode #49 Group Anagrams", "https://leetcode.com/problems/group-anagrams/", "key design、HashMap、排序成本"),
+      c("Google", "LeetCode #3 Longest Substring Without Repeating Characters", "https://leetcode.com/problems/longest-substring-without-repeating-characters/", "sliding window、set/map"),
+      c("TSMC", "SQL50：Select + Basic Joins 前 5 題", LINKS.sql50, "資料查詢精準度、join 語意"),
+      c("Google", "LeetCode #238 Product of Array Except Self", "https://leetcode.com/problems/product-of-array-except-self/", "prefix/suffix、不可用除法"),
+      c("NVIDIA", "LeetCode #347 Top K Frequent Elements", "https://leetcode.com/problems/top-k-frequent-elements/", "heap vs bucket sort")
+    ],
+    java: j("HashMap、equals/hashCode、immutability", "能解釋 bucket、hash collision、resize、Java 8 treeification，並說明在 cache key / entity key 的風險。", LINKS.baeldungHashMap),
+    design: d("Design a rate limiter", "釐清 per-user/per-IP、fixed window、sliding window、token bucket、Redis atomicity、multi-region consistency。", LINKS.hello),
+    tsmc: t("TSMC IT 組織與製造資料場景", "整理 TSID/ICSD/BSID/AAID；把你的 Java 後端經驗對應到 fab automation、ERP/SCM、engineering data analysis。", LINKS.tsmcIt),
+    nvidia: n("NVIDIA backend performance vocabulary", "準備 latency、throughput、tail latency、batching、queue depth、resource utilization 的英文說法。", LINKS.nvidiaNim),
+    behavior: "STAR：一次你在模糊需求下做出技術決策的經驗。",
+    podcast: "Explain HashMap, sliding window, rate limiter, and why manufacturing IT systems need reliable data pipelines."
+  },
+  {
+    phase: "Phase 1：資料結構手感",
+    focus: "Linked List / Stack / Queue / OOP",
+    companies: ["Google", "NVIDIA", "TSMC"],
+    coding: [
+      c("Google", "LeetCode #206 Reverse Linked List", "https://leetcode.com/problems/reverse-linked-list/", "pointer invariant"),
+      c("Google", "LeetCode #20 Valid Parentheses", "https://leetcode.com/problems/valid-parentheses/", "stack、invalid input"),
+      c("TSMC", "HackerRank Queue using Two Stacks", "https://www.hackerrank.com/challenges/ctci-queue-using-two-stacks", "上機考常見資料結構"),
+      c("Google", "LeetCode #146 LRU Cache", "https://leetcode.com/problems/lru-cache/", "HashMap + doubly linked list"),
+      c("TSMC", "Calculator mini design：不使用 eval 實作 + OOP 分層", "https://leetcode.com/problems/basic-calculator-ii/", "parser、operator precedence、design pattern")
+    ],
+    java: j("Collections、Iterator、LinkedHashMap、LRU", "能寫出 LRU 的 Java 實作，並說明 thread-safe 版本該如何取捨。", "https://www.baeldung.com/java-lru-cache"),
+    design: d("Design an audit log service", "API、append-only storage、query by entity/user/time、retention、PII、backfill。", LINKS.googleCloudArch),
+    tsmc: t("企業系統 OOP 與 design pattern", "用 ERP/SCM pricing 或 calculator service 解釋 Strategy、Factory、Template Method。", LINKS.tsmcIt),
+    nvidia: n("Linux debugging baseline", "整理 top、ps、netstat/ss、lsof、jstack、heap dump 在後端排查中的用途。", "https://www.brendangregg.com/linuxperf.html"),
+    behavior: "STAR：一次你把複雜問題拆小、讓團隊能交付的經驗。",
+    podcast: "Discuss LRU cache, audit logs, OOP design patterns, and how to explain pointer-heavy problems in English."
+  },
+  {
+    phase: "Phase 1：樹與搜尋",
+    focus: "Trees / BFS / DFS / recursion clarity",
+    companies: ["Google", "NVIDIA", "TSMC"],
+    coding: [
+      c("Google", "LeetCode #104 Maximum Depth of Binary Tree", "https://leetcode.com/problems/maximum-depth-of-binary-tree/", "recursion base case"),
+      c("Google", "LeetCode #102 Binary Tree Level Order Traversal", "https://leetcode.com/problems/binary-tree-level-order-traversal/", "BFS queue"),
+      c("Google", "LeetCode #236 Lowest Common Ancestor", "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/", "post-order reasoning"),
+      c("TSMC", "SQL50：Group By / Aggregate 5 題", LINKS.sql50, "製造報表聚合"),
+      c("Google", "LeetCode #98 Validate Binary Search Tree", "https://leetcode.com/problems/validate-binary-search-tree/", "bounds、duplicate policy")
+    ],
+    java: j("JVM memory：heap、stack、metaspace、GC root", "能用面試語言說明物件生命週期、stack overflow、OOM 類型與初步排查。", "https://www.baeldung.com/java-stack-heap"),
+    design: d("Design autocomplete", "Trie vs search index、prefix query、ranking、freshness、cache、multi-language。", LINKS.hello),
+    tsmc: t("工程資料查詢與聚合", "把 SQL aggregate 對應到 yield、defect count、tool utilization 報表。", LINKS.tsmcIt),
+    nvidia: n("Queueing intuition", "理解 queue、worker pool、backpressure；準備 NVIDIA/infra 題常見效能說法。", LINKS.googleSre),
+    behavior: "STAR：一次你發現品質問題並主動補測試或監控的經驗。",
+    podcast: "Teach tree traversal, JVM memory, autocomplete architecture, and manufacturing aggregate analytics."
+  },
+  {
+    phase: "Phase 1：圖與依賴",
+    focus: "Graph / Topological sort / dependency thinking",
+    companies: ["Google", "NVIDIA", "TSMC"],
+    coding: [
+      c("Google", "LeetCode #200 Number of Islands", "https://leetcode.com/problems/number-of-islands/", "DFS/BFS visited"),
+      c("Google", "LeetCode #207 Course Schedule", "https://leetcode.com/problems/course-schedule/", "topological sort"),
+      c("Google", "LeetCode #210 Course Schedule II", "https://leetcode.com/problems/course-schedule-ii/", "Kahn algorithm"),
+      c("NVIDIA", "LeetCode #743 Network Delay Time", "https://leetcode.com/problems/network-delay-time/", "Dijkstra、priority queue"),
+      c("TSMC", "SQL50：Subquery / CTE 5 題", LINKS.sql50, "依賴與資料轉換")
+    ],
+    java: j("ExecutorService、ThreadPoolExecutor", "能解釋 core/max pool、queue、rejection policy、thread starvation。", LINKS.baeldungExecutor),
+    design: d("Design a distributed task scheduler", "DAG、worker lease、retry、idempotency、state persistence、dead-letter queue。", LINKS.hello),
+    tsmc: t("製造任務排程概念", "把 job scheduler 對應到 fab automation、批次資料處理、報表排程。", LINKS.tsmcIt),
+    nvidia: n("Resource scheduling vocabulary", "整理 GPU/CPU/memory、priority、fairness、preemption、utilization 的英文說法。", LINKS.nvidiaNim),
+    behavior: "STAR：一次你處理跨服務依賴或排程失敗的經驗。",
+    podcast: "Explain graphs, topological sorting, Java thread pools, and distributed task schedulers for interviews."
+  },
+  {
+    phase: "Phase 2：演算法強化",
+    focus: "Binary search / Heap / JVM / GC",
+    companies: ["Google", "NVIDIA", "TSMC"],
+    coding: [
+      c("Google", "LeetCode #33 Search in Rotated Sorted Array", "https://leetcode.com/problems/search-in-rotated-sorted-array/", "binary search invariant"),
+      c("Google", "LeetCode #215 Kth Largest Element", "https://leetcode.com/problems/kth-largest-element-in-an-array/", "heap vs quickselect"),
+      c("NVIDIA", "LeetCode #295 Find Median from Data Stream", "https://leetcode.com/problems/find-median-from-data-stream/", "two heaps、stream"),
+      c("Google", "LeetCode #162 Find Peak Element", "https://leetcode.com/problems/find-peak-element/", "binary search on property"),
+      c("TSMC", "SQL50：Window Function 入門", LINKS.sql50, "排名、移動平均、設備報表")
+    ],
+    java: j("GC：G1、ZGC、pause time、allocation rate", "能說明 GC tuning 不是先背參數，而是先看 allocation、pause、heap、latency SLO。", LINKS.baeldungJvm),
+    design: d("Design a metrics ingestion pipeline", "agent、gateway、Kafka、storage、downsampling、alert、cardinality explosion。", LINKS.googleSre),
+    tsmc: t("設備與製程資料監控", "把 metrics pipeline 對應到 tool health、defect trend、fab dashboard。", LINKS.tsmcIt),
+    nvidia: n("Performance debugging", "準備 p95/p99、CPU flame graph、GC log、thread dump、slow query 的排查順序。", "https://www.brendangregg.com/flamegraphs.html"),
+    behavior: "STAR：一次你做 performance optimization 並量化成果的經驗。",
+    podcast: "Cover binary search invariants, heap streaming, JVM GC, and metrics pipelines."
+  },
+  {
+    phase: "Phase 2：DP 與資料庫",
+    focus: "DP / Greedy / Spring transaction / SQL depth",
+    companies: ["Google", "NVIDIA", "TSMC"],
+    coding: [
+      c("Google", "LeetCode #70 Climbing Stairs", "https://leetcode.com/problems/climbing-stairs/", "DP state"),
+      c("Google", "LeetCode #198 House Robber", "https://leetcode.com/problems/house-robber/", "transition"),
+      c("Google", "LeetCode #322 Coin Change", "https://leetcode.com/problems/coin-change/", "unbounded DP"),
+      c("TSMC", "SQL50：Window Function / Dense Rank", LINKS.sql50, "資料分析筆試"),
+      c("Google", "LeetCode #55 Jump Game", "https://leetcode.com/problems/jump-game/", "greedy proof")
+    ],
+    java: j("Spring transaction、isolation、propagation", "能解釋 read committed、repeatable read、phantom read、rollback-only、self-invocation 風險。", LINKS.springTx),
+    design: d("Design an order/event consistency service", "transaction boundary、outbox pattern、idempotency key、retry、reconciliation。", LINKS.googleCloudArch),
+    tsmc: t("SQL + 製造資料品質", "練習 missing data、duplicate rows、late arriving data、data validation。", LINKS.sql50),
+    nvidia: n("Reliable async APIs", "把 outbox、retry、timeout、circuit breaker 對應到高吞吐服務。", "https://resilience4j.readme.io/docs"),
+    behavior: "STAR：一次你避免資料不一致或修復資料問題的經驗。",
+    podcast: "Explain DP states, SQL analytics, Spring transactions, and event consistency."
+  },
+  {
+    phase: "Phase 2：訊息與快取",
+    focus: "Kafka / Redis / idempotency / resilience",
+    companies: ["Google", "NVIDIA", "TSMC"],
+    coding: [
+      c("Google", "LeetCode #560 Subarray Sum Equals K", "https://leetcode.com/problems/subarray-sum-equals-k/", "prefix sum + HashMap"),
+      c("Google", "LeetCode #239 Sliding Window Maximum", "https://leetcode.com/problems/sliding-window-maximum/", "monotonic deque"),
+      c("NVIDIA", "LeetCode #621 Task Scheduler", "https://leetcode.com/problems/task-scheduler/", "scheduling、cooldown"),
+      c("TSMC", "HackerRank Ransom Note", "https://www.hackerrank.com/challenges/ctci-ransom-note", "HashMap counting"),
+      c("Google", "LeetCode #460 LFU Cache", "https://leetcode.com/problems/lfu-cache/", "O(1) design")
+    ],
+    java: j("Kafka consumer、partition、offset、exactly-once 語意", "能說明 at-least-once、duplicate handling、consumer lag、rebalancing。", LINKS.kafkaDocs),
+    design: d("Design a distributed cache", "cache-aside、TTL、eviction、hot key、consistency、multi-region invalidation。", LINKS.redisDocs),
+    tsmc: t("製造事件流", "設計 tool event -> Kafka -> stream processing -> alert/dashboard 的路徑。", LINKS.tsmcIt),
+    nvidia: n("Backpressure and queue control", "整理 bounded queue、drop policy、shed load、bulkhead、retry storm。", LINKS.googleSre),
+    behavior: "STAR：一次你面對 incident、on-call 或 message backlog 的經驗。",
+    podcast: "Discuss Kafka, Redis caching, idempotency, backpressure, and manufacturing event streams."
+  },
+  {
+    phase: "Phase 2：搜尋與資料管線",
+    focus: "Trie / Search / Data pipeline / Observability",
+    companies: ["Google", "NVIDIA", "TSMC"],
+    coding: [
+      c("Google", "LeetCode #208 Implement Trie", "https://leetcode.com/problems/implement-trie-prefix-tree/", "Trie API"),
+      c("Google", "LeetCode #212 Word Search II", "https://leetcode.com/problems/word-search-ii/", "Trie + DFS"),
+      c("TSMC", "Python data processing：CSV 去重、grouping、rolling average", "https://pandas.pydata.org/docs/getting_started/intro_tutorials/index.html", "資料工程基本功"),
+      c("Google", "LeetCode #76 Minimum Window Substring", "https://leetcode.com/problems/minimum-window-substring/", "sliding window hard"),
+      c("TSMC", "SQL case：找出異常設備與連續 3 天 defect spike", LINKS.sql50, "window function + case when")
+    ],
+    java: j("Spring Data JPA、N+1、index、pagination", "能說明 join fetch、EntityGraph、offset vs cursor pagination、slow query。", LINKS.baeldungJpa),
+    design: d("Design search autocomplete with analytics", "index build、query service、ranking signals、click logs、A/B、privacy。", LINKS.hello),
+    tsmc: t("工程資料分析 pipeline", "設計 raw data -> validation -> feature table -> dashboard/model 的路徑。", LINKS.tsmcIt),
+    nvidia: n("Observability for backend services", "metrics、logs、traces、SLO、alert fatigue、high cardinality。", LINKS.prometheus),
+    behavior: "STAR：一次你用資料改善系統或產品決策的經驗。",
+    podcast: "Teach trie/search, JPA performance, observability, and TSMC-style engineering data pipelines."
+  },
+  {
+    phase: "Phase 3：Infra / SRE / Kubernetes",
+    focus: "Kubernetes / Linux / reliability",
+    companies: ["Google", "NVIDIA", "TSMC"],
+    coding: [
+      c("Google", "LeetCode #127 Word Ladder", "https://leetcode.com/problems/word-ladder/", "BFS shortest path"),
+      c("NVIDIA", "LeetCode #146 LRU Cache 冷解 15 分鐘", "https://leetcode.com/problems/lru-cache/", "速度與正確性"),
+      c("TSMC", "SQL50：Advanced joins + null handling", LINKS.sql50, "資料品質"),
+      c("Google", "LeetCode #128 Longest Consecutive Sequence", "https://leetcode.com/problems/longest-consecutive-sequence/", "HashSet O(n)"),
+      c("NVIDIA", "LeetCode #23 Merge K Sorted Lists", "https://leetcode.com/problems/merge-k-sorted-lists/", "heap、stream merging")
+    ],
+    java: j("Service reliability in Java", "thread dump、connection pool、timeout、bulkhead、health check、graceful shutdown。", LINKS.googleSre),
+    design: d("Design a Kubernetes job platform", "API、controller、scheduler、worker pod、retry、quota、observability、multi-tenant isolation。", LINKS.k8sDocs),
+    tsmc: t("ICSD / cloud / security 對應", "整理台積電 IT infrastructure、cloud computing、network/security 對 Java backend 的要求。", LINKS.tsmcIt),
+    nvidia: n("GPU workload on Kubernetes", "理解 node labels、taints/tolerations、resource requests、autoscaling、metrics。", LINKS.nvidiaAutoscale),
+    behavior: "STAR：一次你在 on-call 或高壓情境下做出正確取捨的經驗。",
+    podcast: "Explain Kubernetes job platforms, reliability, Linux debugging, and GPU workload scheduling."
+  },
+  {
+    phase: "Phase 3：AI Infra / Inference Service",
+    focus: "NIM / Triton / async batching / API gateway",
+    companies: ["Google", "NVIDIA", "TSMC"],
+    coding: [
+      c("Google", "LeetCode #84 Largest Rectangle in Histogram", "https://leetcode.com/problems/largest-rectangle-in-histogram/", "monotonic stack"),
+      c("NVIDIA", "LeetCode #981 Time Based Key-Value Store", "https://leetcode.com/problems/time-based-key-value-store/", "binary search + storage"),
+      c("Google", "LeetCode #297 Serialize and Deserialize Binary Tree", "https://leetcode.com/problems/serialize-and-deserialize-binary-tree/", "API design in code"),
+      c("NVIDIA", "LeetCode #355 Design Twitter", "https://leetcode.com/problems/design-twitter/", "feed merge、heap"),
+      c("TSMC", "Python：用 pandas 做 anomaly rule prototype", "https://pandas.pydata.org/docs/getting_started/intro_tutorials/index.html", "rolling stats、threshold")
+    ],
+    java: j("gRPC、REST、timeout、client-side resiliency", "能解釋 sync vs async、deadline、retry policy、streaming、backpressure。", "https://grpc.io/docs/what-is-grpc/core-concepts/"),
+    design: d("Design a high-throughput inference gateway", "request queue、async batching、model endpoint、timeout、fallback、metrics、cost controls。", LINKS.nvidiaNim),
+    tsmc: t("AI/ML Engineer 與 Data Engineer 交界", "把 anomaly detection 從 notebook 變成可維運的服務：features、batch/online、monitoring。", LINKS.tsmcIt),
+    nvidia: n("Triton / NIM operational model", "整理 model server、GPU utilization、KV cache、TTFT、inter-token latency。", LINKS.triton),
+    behavior: "STAR：一次你把 prototype 推進到 production 的經驗。",
+    podcast: "Discuss inference gateways, async batching, gRPC deadlines, Triton/NIM metrics, and production ML services."
+  },
+  {
+    phase: "Phase 4：System Design Classic I",
+    focus: "大型服務設計與 senior trade-off",
+    companies: ["Google", "NVIDIA", "TSMC"],
+    coding: [
+      c("Google", "LeetCode #42 Trapping Rain Water", "https://leetcode.com/problems/trapping-rain-water/", "two pointers"),
+      c("Google", "LeetCode #10 Regular Expression Matching", "https://leetcode.com/problems/regular-expression-matching/", "2D DP"),
+      c("Google", "LeetCode #269 Alien Dictionary", "https://leetcode.com/problems/alien-dictionary/", "topological sort hard"),
+      c("NVIDIA", "LeetCode #432 All O(1) Data Structure", "https://leetcode.com/problems/all-oone-data-structure/", "O(1) data structure"),
+      c("Google", "LeetCode #4 Median of Two Sorted Arrays", "https://leetcode.com/problems/median-of-two-sorted-arrays/", "binary search hard")
+    ],
+    java: j("Concurrency：synchronized、Lock、Atomic、volatile", "能說明 happens-before、visibility、race condition、deadlock、lock granularity。", LINKS.baeldungLocks),
+    design: d("Design YouTube", "upload、transcode、metadata、search、streaming、CDN、recommendation boundary、abuse control。", "https://interviewing.io/mocks/google-system-design-design-youtube"),
+    tsmc: t("Design a fab dashboard", "資料 ingestion、aggregation、alert、permission、high availability、audit trail。", LINKS.tsmcIt),
+    nvidia: n("Senior trade-off framing", "每個 design 回答都要講 scale、bottleneck、failure mode、operational cost。", LINKS.hello),
+    behavior: "STAR：一次你主導設計 review 並影響團隊方向的經驗。",
+    podcast: "Run a senior-level mock discussion about YouTube design, Java concurrency, and operational trade-offs."
+  },
+  {
+    phase: "Phase 4：System Design Classic II",
+    focus: "Collaboration / data products / manufacturing systems",
+    companies: ["Google", "NVIDIA", "TSMC"],
+    coding: [
+      c("Google", "LeetCode #51 N-Queens", "https://leetcode.com/problems/n-queens/", "backtracking"),
+      c("Google", "LeetCode #312 Burst Balloons", "https://leetcode.com/problems/burst-balloons/", "interval DP"),
+      c("TSMC", "SQL case：良率趨勢與設備異常 correlation", LINKS.sql50, "analysis query"),
+      c("Google", "LeetCode #224 Basic Calculator", "https://leetcode.com/problems/basic-calculator/", "parser / stack"),
+      c("TSMC", "Python case：產線事件資料 ETL + validation", "https://pandas.pydata.org/docs/getting_started/intro_tutorials/index.html", "ETL reliability")
+    ],
+    java: j("Testing strategy：unit、integration、contract、load test", "能說明如何測試 transaction、message consumer、batch job、external API。", "https://martinfowler.com/articles/practical-test-pyramid.html"),
+    design: d("Design Google Docs collaborative editing", "document model、conflict resolution、OT/CRDT concept、presence、history、permission。", LINKS.hello),
+    tsmc: t("Design manufacturing anomaly detection platform", "資料來源、feature、model serving、alert workflow、human feedback、false positive controls。", LINKS.tsmcIt),
+    nvidia: n("Data-intensive systems", "把 storage、stream、batch、online serving 的邊界講清楚。", "https://dataintensive.net/"),
+    behavior: "STAR：一次你和資料/製程/產品角色跨部門合作的經驗。",
+    podcast: "Explain collaborative editing, manufacturing anomaly detection, testing strategy, and data-intensive trade-offs."
+  },
+  {
+    phase: "Phase 5：Google Mock Loop",
+    focus: "Coding speed / system design conversation / Googleyness",
+    companies: ["Google", "NVIDIA", "TSMC"],
+    coding: [
+      c("Google", "Blind timed：Graph medium 35 分鐘", "https://leetcode.com/problemset/?difficulty=MEDIUM&topicSlugs=graph", "全英文讀題與筆記"),
+      c("Google", "Blind timed：Sliding window medium 35 分鐘", "https://leetcode.com/problemset/?difficulty=MEDIUM&topicSlugs=sliding-window", "clarify -> solve -> optimize"),
+      c("Google", "Blind timed：DP medium 35 分鐘", "https://leetcode.com/problemset/?difficulty=MEDIUM&topicSlugs=dynamic-programming", "state definition"),
+      c("Google", "Blind timed：Heap / PriorityQueue 35 分鐘", "https://leetcode.com/problemset/?topicSlugs=heap-priority-queue", "Java API 熟練"),
+      c("Google", "Redo hardest wrong answer", "https://leetcode.com/submissions/", "冷解錯題")
+    ],
+    java: j("Google-style code quality", "練習乾淨命名、test cases、edge cases、complexity，像在 Google Doc 裡寫 code。", LINKS.googleGuide),
+    design: d("Design personalized news feed", "fanout、ranking、privacy、freshness、cache、abuse、experiments。", LINKS.interviewing),
+    tsmc: t("不排 TSMC 新內容", "本週主攻 Google，但週五仍用 SQL warm-up 保持手感。", LINKS.sql50),
+    nvidia: n("不排 NVIDIA 新內容", "本週主攻 Google，但保留 performance vocabulary。", LINKS.nvidiaNim),
+    behavior: "Googleyness：ambiguity、intellectual humility、leadership without authority。",
+    podcast: "Create a Google mock interview episode: coding explanation, news feed system design, and behavioral answers."
+  },
+  {
+    phase: "Phase 5：NVIDIA Mock Loop",
+    focus: "AI infra / Kubernetes / performance / distributed systems",
+    companies: ["Google", "NVIDIA", "TSMC"],
+    coding: [
+      c("NVIDIA", "Timed：Merge K Sorted Lists", "https://leetcode.com/problems/merge-k-sorted-lists/", "heap + throughput story"),
+      c("NVIDIA", "Timed：Find Median from Data Stream", "https://leetcode.com/problems/find-median-from-data-stream/", "streaming data"),
+      c("NVIDIA", "Timed：Task Scheduler", "https://leetcode.com/problems/task-scheduler/", "resource scheduling"),
+      c("NVIDIA", "Timed：LRU Cache", "https://leetcode.com/problems/lru-cache/", "cache internals"),
+      c("NVIDIA", "Timed：Top K Frequent", "https://leetcode.com/problems/top-k-frequent-elements/", "heap/bucket trade-off")
+    ],
+    java: j("High-throughput Java service", "thread pool、Netty/async concept、connection pool、GC、metrics、backpressure。", LINKS.googleSre),
+    design: d("Design GPU inference autoscaling", "traffic, queue, batching, GPU cache usage, Prometheus metrics, HPA/custom metrics, degradation。", LINKS.nvidiaAutoscale),
+    tsmc: t("TSMC parallel：GPU/inference vs manufacturing analytics", "比較兩者的 pipeline、latency、observability，準備跨公司轉換說法。", LINKS.tsmcIt),
+    nvidia: n("NIM/Triton mock", "聽懂並整理 NIM, Triton, Kubernetes, TTFT, inter-token latency, GPU utilization。", LINKS.nvidiaNim),
+    behavior: "STAR：一次你優化效能或資源成本的經驗。",
+    podcast: "Create an NVIDIA-style senior backend mock about inference autoscaling, Kubernetes, and Java performance."
+  },
+  {
+    phase: "Phase 5：TSMC IT / Data Mock Loop",
+    focus: "製造業 IT / SQL / Python / cross-functional",
+    companies: ["Google", "NVIDIA", "TSMC"],
+    coding: [
+      c("TSMC", "SQL timed：Top SQL 50 任選 5 題", LINKS.sql50, "45 分鐘完成"),
+      c("TSMC", "Python timed：CSV ETL + anomaly rule", "https://pandas.pydata.org/docs/getting_started/intro_tutorials/index.html", "資料清理與驗證"),
+      c("TSMC", "HackerRank：Minimum Swaps 2", "https://www.hackerrank.com/challenges/minimum-swaps-2", "上機考練習"),
+      c("TSMC", "Calculator / parser redo", "https://leetcode.com/problems/basic-calculator-ii/", "OOP + edge cases"),
+      c("TSMC", "SQL case：設備 downtime 報表", LINKS.sql50, "join、group by、window")
+    ],
+    java: j("Enterprise backend：Spring Batch、scheduler、transaction、audit", "能說明資料批次、重跑、rollback、audit log、operator workflow。", "https://spring.io/projects/spring-batch"),
+    design: d("Design a manufacturing data platform", "MES/tool events、data lake/warehouse、validation、feature store、dashboard、access control。", LINKS.tsmcIt),
+    tsmc: t("TSMC manager interview prep", "準備專案細節、抗壓、on-call、跨部門溝通、論文/研究/數據結果。", LINKS.tsmcIt),
+    nvidia: n("保留 infra 語彙", "把 observability、reliability、autoscaling 用在製造資料平台回答中。", LINKS.googleSre),
+    behavior: "STAR：一次你與非軟體背景 stakeholder 溝通需求的經驗。",
+    podcast: "Create a TSMC IT mock episode about manufacturing data, SQL/Python, enterprise systems, and cross-functional communication."
+  },
+  {
+    phase: "Phase 6：Final Onsite Simulation",
+    focus: "正式面試節奏 / 弱點清零 / 反問面試官",
+    companies: ["Google", "NVIDIA", "TSMC"],
+    coding: [
+      c("Google", "Onsite coding mock 1：陌生 Medium/Hard", "https://leetcode.com/problemset/", "45 分鐘"),
+      c("NVIDIA", "Onsite coding mock 2：heap/stream/cache", "https://leetcode.com/problemset/?topicSlugs=heap-priority-queue", "45 分鐘"),
+      c("TSMC", "Onsite data mock：SQL + Python", LINKS.sql50, "60 分鐘"),
+      c("Google", "System design mock：YouTube / Docs / Scheduler 三選一", LINKS.interviewing, "45 分鐘"),
+      c("All", "錯題最終清單清零", "https://leetcode.com/submissions/", "只看自己錯過的")
+    ],
+    java: j("Final Java backend interview packet", "整理你會被問的 20 題：JVM、GC、thread pool、Spring tx、Kafka、Redis、SQL、observability；每題準備 30 秒與 2 分鐘版。", LINKS.googleSre),
+    design: d("Final architecture review", "用同一個框架回答：requirements、non-goals、APIs、data model、scaling、failure、metrics、trade-offs。", LINKS.hello),
+    tsmc: t("反問台積電面試官", "準備 5 題：team ownership、製造資料挑戰、系統穩定度、跨廠部署、成長路徑。", LINKS.tsmcIt),
+    nvidia: n("反問 NVIDIA 面試官", "準備 5 題：AI infra scale、GPU utilization metrics、Kubernetes stack、on-call、team roadmap。", LINKS.nvidiaNim),
+    behavior: "整理最後一版英文自我介紹文字、專案深挖筆記、STAR 六故事、反問面試官。",
+    podcast: "Create a final confidence episode that rehearses your opening pitch, project stories, weak-spot repairs, and final technical summaries."
+  }
+];
+
+const PRIORITIES = [
+  {
+    company: "Google",
+    cls: "google",
+    bullets: [
+      "Coding：HashMap、graph、topological sort、binary search、heap、DP、trie、sliding window。",
+      "System design：YouTube、Google Docs、autocomplete、distributed scheduler、rate limiter、cache。",
+      "Behavioral：ambiguity、leadership without authority、conflict、project impact、feedback humility。"
+    ],
+    links: [{label:"Google senior SWE", url:LINKS.googleSenior}, {label:"Virtual interview guide", url:LINKS.googleGuide}]
+  },
+  {
+    company: "NVIDIA",
+    cls: "nvidia",
+    bullets: [
+      "Distributed systems：Kubernetes、Linux debugging、message broker、resource scheduling、performance。",
+      "AI infra：NIM、Triton、async batching、autoscaling、GPU inference metrics。",
+      "Coding：heap、stream、cache、scheduler 類題，重點是效能與資源取捨。"
+    ],
+    links: [{label:"NVIDIA hiring", url:LINKS.nvidiaHire}, {label:"NIM", url:LINKS.nvidiaNim}]
+  },
+  {
+    company: "TSMC IT / Data",
+    cls: "tsmc",
+    bullets: [
+      "Coding：HackerRank 類上機、Java OOP/design pattern、calculator/parser 類題。",
+      "Data：SQL50、Python ETL、資料品質、異常偵測、製造資料 pipeline。",
+      "Behavioral：抗壓、跨部門溝通、on-call、專案細節、論文/過往研究深挖。"
+    ],
+    links: [{label:"TSMC IT Careers", url:LINKS.tsmcIt}, {label:"SQL50", url:LINKS.sql50}]
+  }
+];
+
+const SOURCES = [
+  ["TSMC IT Careers", "官方 IT 團隊、產品、職缺方向：TSID、ICSD、BSID、AAID、Software、DevOps、SRE、AI/ML、Data Engineer。", LINKS.tsmcIt],
+  ["NVIDIA How We Hire", "官方招募流程：多輪 30-60 分鐘面試，技術職可能有 coding exercise。", LINKS.nvidiaHire],
+  ["NVIDIA NIM", "NVIDIA inference microservices、Kubernetes、low latency/high throughput、observability。", LINKS.nvidiaNim],
+  ["NIM Kubernetes Autoscaling", "GPU cache usage、Prometheus、Grafana、custom metrics、autoscaling。", LINKS.nvidiaAutoscale],
+  ["Google Senior SWE example", "Google senior SWE 常見職缺訊號：5 年以上、DSA、system design、API、跨團隊合作。", LINKS.googleSenior],
+  ["Google Virtual Interview Guide", "面試工具、Google Meet、AI 禁用、技術問題保密與作答規範。", LINKS.googleGuide],
+  ["Google Cloud Architecture Center", "雲端架構、可靠性、安全、成本、性能、部署拓撲。", LINKS.googleCloudArch],
+  ["NotebookLM Audio Overview", "Google 官方說明：可根據來源生成可下載的英文 audio discussion，但仍需自行查核。", LINKS.notebookAudio]
+];
+
+const LISTENING_RESOURCES = [
+  {
+    title: "Coding / DSA",
+    cls: "google",
+    bullets: [
+      "NeetCode：先聽解題 pattern，再自己用 Java 寫。",
+      "重點：HashMap、sliding window、two pointers、graph、DP。",
+      "筆記只抓 approach、edge case、complexity。"
+    ],
+    links: [{label:"NeetCode Playlists", url:"https://www.youtube.com/@NeetCode/playlists"}, {label:"NeetCode Practice", url:"https://neetcode.io/practice"}]
+  },
+  {
+    title: "System Design",
+    cls: "google",
+    bullets: [
+      "ByteByteGo / Hello Interview：聽大型系統怎麼拆。",
+      "重點：requirements、API、data model、bottleneck、trade-off。",
+      "不要追求一次全懂，先能畫出主流程。"
+    ],
+    links: [{label:"ByteByteGo", url:"https://www.youtube.com/@ByteByteGo/videos"}, {label:"Hello Interview", url:LINKS.hello}]
+  },
+  {
+    title: "NVIDIA / Infra",
+    cls: "nvidia",
+    bullets: [
+      "NVIDIA Developer：聽 NIM、Triton、Kubernetes、GPU inference。",
+      "重點：latency、throughput、batching、autoscaling、metrics。",
+      "聽不懂的詞直接放進弱點清單。"
+    ],
+    links: [{label:"NVIDIA Developer", url:"https://www.youtube.com/@NVIDIADeveloper/videos"}, {label:"NVIDIA NIM", url:LINKS.nvidiaNim}]
+  },
+  {
+    title: "TSMC IT / Data",
+    cls: "tsmc",
+    bullets: [
+      "TSMC IT 官方頁 + NotebookLM：把文字資料轉成可聽教材。",
+      "重點：smart manufacturing、engineering data analysis、enterprise systems。",
+      "搭配 SQL50 / Python ETL 任務做短筆記。"
+    ],
+    links: [{label:"TSMC IT Careers", url:LINKS.tsmcIt}, {label:"NotebookLM", url:LINKS.notebook}]
+  },
+  {
+    title: "Java Backend",
+    cls: "java",
+    bullets: [
+      "Baeldung / Spring Docs：用來補 JVM、concurrency、Spring transaction。",
+      "重點：先看懂概念，再回到題目或專案場景。",
+      "每次只整理 5 bullets，不要抄整篇。"
+    ],
+    links: [{label:"Baeldung", url:"https://www.baeldung.com/"}, {label:"Spring Transaction", url:LINKS.springTx}]
+  },
+  {
+    title: "Generated Podcast",
+    cls: "english",
+    bullets: [
+      "NotebookLM / Gemini：用本週筆記生成 8-10 分鐘英文聽力教材。",
+      "目的：聽懂技術詞和講解順序，不練自我口說。",
+      "每週日只摘 8 句你真的聽懂的句子。"
+    ],
+    links: [{label:"NotebookLM", url:LINKS.notebook}, {label:"Audio Overview", url:LINKS.notebookAudio}]
+  }
+];
+
+const SCORE_FIELDS = [
+  ["coding", "Coding 完成題數", 5],
+  ["redo", "錯題冷解題數", 2],
+  ["english", "技術聽力完成次數", 5],
+  ["design", "System design 練習", 2],
+  ["java", "Java 主題熟練度 1-5", 4],
+  ["data", "SQL/Python 題數", 2]
+];
+
+const NOTE_TEMPLATE = `這個任務的意思：建立你每天固定填的面試日誌。不是寫作文，是讓你每天留下可複習的證據。
+
+每天照這個格式填 5-10 分鐘：
+
+Date:
+Company focus:
+Coding problem:
+My approach:
+Bug / stuck point:
+Time complexity:
+Space complexity:
+English sentence I practiced:
+One thing to redo tomorrow:
+
+範例：
+Date: 2026-04-22
+Company focus: Google
+Coding problem: Two Sum
+My approach: Use a HashMap to store value -> index while scanning once.
+Bug / stuck point: I forgot to explain why checking before inserting avoids using the same element twice.
+Time complexity: O(n)
+Space complexity: O(n)
+English sentence I practiced: I would clarify whether the array can contain duplicates before choosing the implementation.
+One thing to redo tomorrow: Explain 3Sum with two pointers in English.`;
+
+const DEMO_SCRIPTS = {
+  "聽講解 baseline：Two Sum / 3Sum": `聽完講解後，筆記可以長這樣：
+
+Problem: Two Sum / 3Sum
+Pattern: HashMap for Two Sum; sorting + two pointers for 3Sum.
+Why this works: Two Sum needs fast complement lookup. 3Sum needs duplicate control and a systematic search after sorting.
+Edge case: Same element cannot be used twice; 3Sum needs to skip duplicate values.
+Complexity: Two Sum O(n), 3Sum O(n^2).
+Useful English sentence: "I can reduce the lookup cost by storing previously seen values in a hash map."
+
+你今天只要聽懂這種拆法，不需要自己錄音。`,
+
+  "建立面試筆記格式": NOTE_TEMPLATE,
+
+  "聽別人怎麼講專案與設計": `聽 system design / mock interview 時，照這個格式抓重點：
+
+1. 開頭有沒有先問 requirements？
+2. 對方怎麼切 API、資料模型、read path、write path？
+3. 哪個 trade-off 講得最清楚？
+4. 哪個 failure mode 是你原本沒想到的？
+5. 摘一句你可以學的英文：
+   "The main trade-off here is between consistency and availability."
+
+你不用模仿語氣，先把架構思路聽懂。`,
+
+  "聽懂 TSMC IT / 製造資料語彙": `今天聽 NotebookLM / 讀 TSMC IT 頁面時，抓這些詞：
+
+Smart manufacturing: 智慧製造
+Manufacturing data: 製造資料
+Engineering data analysis: 工程資料分析
+Reliability: 可靠性
+Cross-functional collaboration: 跨部門合作
+Enterprise systems: 企業系統
+Cloud infrastructure: 雲端基礎建設
+Data pipeline: 資料管線
+
+筆記目標：你先能看懂、聽懂這些詞出現在職缺或介紹裡代表什麼。`,
+
+  "聽懂 latency vs throughput": `聽 NVIDIA / infra 講解時，先抓這些概念：
+
+Latency: 單一請求花多久完成。
+Throughput: 單位時間能處理多少工作。
+Batching: 一次處理多個請求，通常提高 throughput，但可能增加等待時間。
+Queue depth: 排隊中的請求數，過高通常代表系統快塞住。
+Timeout: 等太久就停止，避免資源被拖住。
+GPU utilization: GPU 實際被使用的比例。
+
+交付筆記範例：
+"Batching improves throughput, but it can increase latency because requests may wait in a queue."`,
+
+  "正式週聽力筆記模板": `下週每次聽講解都照這樣填：
+
+Video / source:
+Topic:
+Problem:
+Approach:
+Data structure or system component:
+Why this approach works:
+Trade-off:
+Complexity or bottleneck:
+One useful English sentence:
+One thing I still do not understand:
+
+你只要穩定聽、穩定寫短筆記，先不用自己講。`
+};
+
+const WEEK1_ENGLISH_DEMOS = {
+  1: `聽完 Group Anagrams / HashMap 講解後，筆記可以長這樣：
+
+Problem: Group Anagrams
+Pattern: HashMap grouping
+Approach: Convert each word into a normalized key, then group original words by that key.
+Trade-off: Sorting the word is simpler; counting characters is faster for lowercase English letters.
+Complexity: Sorting approach is O(n * k log k).
+Useful sentence: "The normalized key lets us group equivalent strings together."
+Still unclear: How to implement the character-count key cleanly in Java.`,
+
+  2: `聽完 Rate Limiter 講解後，筆記可以長這樣：
+
+Problem: Limit abusive or excessive requests.
+Components: API gateway, Redis, token bucket or sliding window.
+Trade-off: Fixed window is simple but inaccurate near boundaries; sliding window is more accurate but more expensive.
+Failure mode: Redis latency or outage can affect all requests.
+Useful sentence: "The main trade-off is accuracy versus operational simplicity."
+Still unclear: When should the system fail open versus fail closed?`,
+
+  3: `聽完 NVIDIA / performance 講解後，筆記可以長這樣：
+
+Topic: Inference API performance
+Important metrics: p95 latency, p99 latency, throughput, queue depth, GPU utilization.
+Trade-off: Batching improves throughput, but may increase latency.
+Failure mode: Retry amplification can make overload worse.
+Useful sentence: "We should define the SLO before optimizing the system."
+Still unclear: How custom metrics drive autoscaling in Kubernetes.`,
+
+  4: `聽完 TSMC IT / manufacturing data 講解後，筆記可以長這樣：
+
+Scenario: Equipment events to engineering dashboard.
+Pipeline: Ingestion -> validation -> storage -> aggregation -> dashboard / alert.
+Key concern: Data correctness matters because engineers may make decisions based on this data.
+Useful terms: manufacturing data, yield analysis, anomaly detection, cross-functional collaboration.
+Useful sentence: "The pipeline should be idempotent because the same event may arrive more than once."
+Still unclear: Which parts are batch processing and which parts need near-real-time updates?`,
+
+  5: `聽完 behavioral / senior interview mock 後，筆記可以長這樣：
+
+Question type: Ambiguous requirement / leadership
+Structure: Situation -> constraint -> decision -> trade-off -> result.
+Good signal: The speaker quantified impact and explained why the trade-off was reasonable.
+Useful sentence: "I aligned the team by separating must-have requirements from nice-to-have features."
+Still unclear: How much technical detail should be included in a behavioral answer?`
+};
+
+const SETUP_START = new Date(2026, 3, 22);
+const FORMAL_START = new Date(2026, 3, 27);
+const FORMAL_END = new Date(2026, 7, 16);
+const MS_DAY = 24 * 60 * 60 * 1000;
+const DAY_NAMES = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+const SOURCE_DATE = "2026-04-22";
+const APP_CONFIG = window.__PREP_CONFIG__ || {};
+const SUPABASE_URL = APP_CONFIG.supabaseUrl || "https://hbccslbwxxvkutzncakl.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = APP_CONFIG.supabasePublishableKey || "sb_publishable_KeeiTQo_zeqn1xb8RMZjhA_urAd_1Ck";
+const SUPABASE_PROGRESS_TABLE = "learner_progress";
+const SUPABASE_PROGRESS_OVERVIEW_RPC = "list_progress_overview";
+const AUTH_EMAIL_DOMAIN = "users.interview-prep.local";
+let selectedDate = getInitialDate();
+
+function c(company, title, url, note) { return { company, title, url, note }; }
+function j(topic, detail, url) { return { topic, detail, url }; }
+function d(topic, detail, url) { return { topic, detail, url }; }
+function t(topic, detail, url) { return { topic, detail, url }; }
+function n(topic, detail, url) { return { topic, detail, url }; }
+function task(cat, company, title, minutes, detail, deliverable, links) {
+  return { cat, company, title, minutes, detail, deliverable, links: links || [] };
+}
+
+function zeroTime(date) { return new Date(date.getFullYear(), date.getMonth(), date.getDate()); }
+function parseYmd(value) {
+  if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+  const [y, m, d] = value.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+function dateKey(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+function daysBetween(a, b) { return Math.round((zeroTime(a) - zeroTime(b)) / MS_DAY); }
+function clamp(num, min, max) { return Math.max(min, Math.min(max, num)); }
+function getInitialDate() {
+  const params = new URLSearchParams(location.search);
+  return parseYmd(params.get("date")) || zeroTime(new Date());
+}
+
+function getWeekInfo(date) {
+  const setupIndex = SETUP_DAYS.findIndex(day => day.date === dateKey(date));
+  if (setupIndex >= 0) return { mode: "setup", setupIndex, weekIndex: -1, week: null, displayWeek: "暖身" };
+  const formalDay = daysBetween(date, FORMAL_START);
+  if (formalDay < 0) return { mode: "before", weekIndex: -1, week: WEEKS[0], displayWeek: "尚未開始" };
+  const weekIndex = Math.floor(formalDay / 7);
+  if (weekIndex >= WEEKS.length) return { mode: "after", weekIndex: WEEKS.length - 1, week: WEEKS[WEEKS.length - 1], displayWeek: "完成後" };
+  return { mode: "formal", weekIndex, week: WEEKS[weekIndex], displayWeek: `第 ${weekIndex + 1} 週` };
+}
+
+function todayTasks(date) {
+  const info = getWeekInfo(date);
+  if (info.mode === "setup") return SETUP_DAYS[info.setupIndex].tasks.map((x, i) => ({...x, id: `setup-${i}`}));
+  if (info.mode === "before") {
+    return [withId(task("behavior", "All", "正式課綱尚未開始", 20, "先準備履歷、LeetCode 帳號、聽力資源清單與每日筆記格式。", "把 5 個弱點加入右側清單。", []), "before-0")];
+  }
+  if (info.mode === "after") {
+    return [
+      withId(task("behavior", "All", "16 週已完成：進入面試週維持模式", 30, "每天做 1 題 Medium、聽 1 段技術講解、重看 1 張 design 筆記。", "只維持手感，不再大量新增材料。", []), "after-0"),
+      withId(task("system", "All", "Final readiness check", 30, "檢查 coding、system design、behavioral、company pitch 是否都有完成筆記與可重聽資源。", "列出真正面試前 48 小時只複習的 10 件事。", []), "after-1")
+    ];
+  }
+
+  const week = info.week;
+  const dow = date.getDay();
+  const tasks = [];
+  if (dow >= 1 && dow <= 5) {
+    const coding = week.coding[dow - 1];
+    const codingMinutes = dow === 5 ? 30 : 35;
+    tasks.push(task("coding", coding.company, coding.title, codingMinutes, `重點：${coding.note}\n全程用 Java 或 SQL/Python 完成；先講思路再寫。`, "交付：提交或完成筆記；寫 time/space complexity；記 1 個 edge case。", [{label:"打開題目", url:coding.url}]));
+
+    if (dow === 1) {
+      tasks.push(task("java", "Google", week.java.topic, 25, week.java.detail, "交付：5 bullets + 5 句英文技術筆記。", [{label:"技術資源", url:week.java.url}]));
+    } else if (dow === 2) {
+      tasks.push(task("system", "Google", week.design.topic, 25, week.design.detail, "交付：requirements、API、data model、bottleneck、trade-off 各 1 點。", [{label:"設計資源", url:week.design.url}]));
+    } else if (dow === 3) {
+      tasks.push(task("system", "NVIDIA", week.nvidia.topic, 25, week.nvidia.detail, "交付：用英文寫 6 句 performance / infra 相關回答。", [{label:"NVIDIA/Infra 資源", url:week.nvidia.url}]));
+    } else if (dow === 4) {
+      tasks.push(task("data", "TSMC", week.tsmc.topic, 25, week.tsmc.detail, "交付：把題目連到 TSMC IT/製造資料場景，寫 5 bullets。", [{label:"TSMC/Data 資源", url:week.tsmc.url}]));
+    } else {
+      tasks.push(task("behavior", "All", "Behavioral / company drill", 20, week.behavior, "交付：STAR 草稿一版；Action 佔 60%，Result 有數字。", [
+        {label:"Google", url:LINKS.googleSenior}, {label:"NVIDIA", url:LINKS.nvidiaHire}, {label:"TSMC", url:LINKS.tsmcIt}
+      ]));
+      tasks.push(task("english", "All", "Friday listening review", 20, `聽一段 behavioral 或 senior interview mock，重點觀察：對方怎麼描述 action、result、impact。\n本週題目：${week.behavior}`, "交付：摘 5 句好用英文；寫 3 行你聽到的回答結構。", [{label:"Hello Interview", url:LINKS.hello}]));
+      tasks.push(task("english", "All", "Weekly podcast script prompt", 20, "使用右側 prompt，把本週筆記丟進 NotebookLM 或 Gemini Audio Overview，產生英文 podcast。", "交付：生成或保存 prompt；挑 5 句你下週要模仿的英文。", [{label:"NotebookLM", url:LINKS.notebook}]));
+      return tasks.map((x, i) => ({...x, id: `formal-${info.weekIndex}-${dow}-${i}`}));
+    }
+
+    tasks.push(task("english", "All", listeningPrompt(week, dow), 20, "聽一段對應主題的講解。先不要自己口說，專心聽對方怎麼拆問題、怎麼講 trade-off。", "交付：3 個技術重點 + 3 句英文句型 + 1 個還沒聽懂的點。", listeningLinks(dow)));
+    tasks.push(task("behavior", "All", "Daily interview log", 10, "把今天的 coding 錯誤、技術關鍵句、英文卡點、明日回補寫下來。", "交付：4 行筆記，不超過 10 分鐘。", []));
+    return tasks.map((x, i) => ({...x, id: `formal-${info.weekIndex}-${dow}-${i}`}));
+  }
+
+  if (dow === 6) {
+    tasks.push(task("coding", "All", "Weekly wrong-answer redo", 35, "從本週錯題或卡住題選 1-2 題冷解，不看答案。", "交付：寫出錯因分類：pattern / API / edge case / time management。", [{label:"LeetCode submissions", url:"https://leetcode.com/submissions/"}]));
+    tasks.push(task("system", "All", "Weekly mock block", 35, `本週 mock：${week.design.topic} 或 ${week.tsmc.topic}。嚴格計時，像面試一樣講。`, "交付：一張架構圖 + 5 個 trade-off。", [{label:"Mock replays", url:LINKS.interviewing}]));
+    tasks.push(task("english", "All", "Weekly listening recap", 20, "重聽本週最有幫助的一段講解，這次只抓你第一次沒聽懂的地方。", "交付：把 1 個沒聽懂的技術點新增到右側弱點清單。", []));
+    return tasks.map((x, i) => ({...x, id: `formal-${info.weekIndex}-${dow}-${i}`}));
+  }
+
+  tasks.push(task("behavior", "All", "Weekly scorecard", 20, "填右側每週 Review 分數表，低於目標的項目排進下週。", "交付：分數表完成；低分項目進弱點清單。", []));
+  tasks.push(task("english", "All", "Podcast listening review", 25, "聽本週 NotebookLM/Gemini 產生的英文 podcast；不用跟讀，只抓技術觀念和句型。", "交付：摘 8 句你看得懂、聽得懂的英文句子。", [{label:"NotebookLM", url:LINKS.notebook}]));
+  tasks.push(task("system", "All", "Next-week preview", 20, "看下週主題，先列 3 個你預期會卡住的點。", "交付：把卡點放進弱點清單，明天開始照表補。", []));
+  return tasks.map((x, i) => ({...x, id: `formal-${info.weekIndex}-${dow}-${i}`}));
+}
+
+function withId(item, id) { return {...item, id}; }
+function listeningPrompt(week, dow) {
+  const prompts = {
+    1: `聽講解：${week.coding[0].title} + ${week.java.topic}`,
+    2: `聽講解：${week.design.topic}`,
+    3: `聽講解：NVIDIA / infra 主題：${week.nvidia.topic}`,
+    4: `聽講解：TSMC IT / data 主題：${week.tsmc.topic}`,
+    5: `聽講解：behavioral / senior interview answer`
+  };
+  return prompts[dow] || "聽講解：今天主題複習";
+}
+
+function listeningLinks(dow) {
+  if (dow === 1) return [{label:"NeetCode", url:"https://www.youtube.com/@NeetCode/playlists"}, {label:"Baeldung", url:"https://www.baeldung.com/"}];
+  if (dow === 2) return [{label:"ByteByteGo", url:"https://www.youtube.com/@ByteByteGo/videos"}, {label:"Hello Interview", url:LINKS.hello}];
+  if (dow === 3) return [{label:"NVIDIA Developer", url:"https://www.youtube.com/@NVIDIADeveloper/videos"}, {label:"NVIDIA NIM", url:LINKS.nvidiaNim}];
+  if (dow === 4) return [{label:"TSMC IT", url:LINKS.tsmcIt}, {label:"NotebookLM", url:LINKS.notebook}];
+  return [{label:"Hello Interview", url:LINKS.hello}];
+}
+
+function catLabel(cat) {
+  return { coding: "Coding", java: "Java Backend", system: "System Design", data: "SQL / Python", tsmc: "TSMC Track", nvidia: "NVIDIA Track", english: "English", behavior: "Behavioral" }[cat] || cat;
+}
+function companyClass(company) {
+  const value = String(company).toLowerCase();
+  if (value.includes("google")) return "google";
+  if (value.includes("nvidia")) return "nvidia";
+  if (value.includes("tsmc")) return "tsmc";
+  return "";
+}
+function catClass(cat) {
+  if (cat === "java") return "java";
+  if (cat === "system") return "system";
+  if (cat === "english") return "english";
+  return "";
+}
+function storageJson(key, fallback) {
+  try { return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)); }
+  catch { return fallback; }
+}
+function shouldSyncKey(key) {
+  return key === cardCompletedKey() || key === weaknessKey() || key.startsWith("prep-v2:score:");
+}
+function setJson(key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
+  if (shouldSyncKey(key)) scheduleRemoteSync();
+}
+function normalizeUsername(username) {
+  return String(username || "").trim();
+}
+function usernameToEmail(username) {
+  const normalized = normalizeUsername(username).toLowerCase();
+  return normalized ? `${normalized}@${AUTH_EMAIL_DOMAIN}` : "";
+}
+function setErrorBox(message) {
+  const box = document.getElementById("authErrorBox");
+  if (!message) {
+    box.textContent = "";
+    box.classList.add("hidden");
+    return;
+  }
+  box.textContent = message;
+  box.classList.remove("hidden");
+}
+function setAuthStatus(message, targetId = "authStatus") {
+  const node = document.getElementById(targetId);
+  if (node) node.textContent = message;
+}
+function setAuthMode(mode) {
+  const loginMode = mode !== "register";
+  document.getElementById("loginForm").classList.toggle("hidden", !loginMode);
+  document.getElementById("registerForm").classList.toggle("hidden", loginMode);
+  document.getElementById("loginTabBtn").classList.toggle("active", loginMode);
+  document.getElementById("registerTabBtn").classList.toggle("active", !loginMode);
+  setErrorBox("");
+}
+function setActiveView(view) {
+  activeView = view;
+  const board = document.getElementById("boardView");
+  const users = document.getElementById("usersView");
+  const isUsers = view === "users";
+  board.classList.toggle("hidden", isUsers);
+  users.classList.toggle("hidden", !isUsers);
+  document.getElementById("viewBoardBtn").classList.toggle("active", !isUsers);
+  document.getElementById("viewUsersBtn").classList.toggle("active", isUsers);
+}
+function updateUserPill() {
+  const username = currentProfile?.username || currentAuthUser?.email || "未登入";
+  const role = currentProfile?.role ? `<span class="role">${currentProfile.role}</span>` : "";
+  document.getElementById("userPill").innerHTML = `${escapeHtml(username)} ${role}`;
+}
+function checkedKey(date) { return `prep-v2:checked:${dateKey(date)}`; }
+function doneKey(dateString) { return `prep-v2:done:${dateString}`; }
+function scoreKey(weekIndex) { return `prep-v2:score:${weekIndex}`; }
+function weaknessKey() { return "prep-v2:weakness"; }
+function getChecked(date) { return storageJson(checkedKey(date), []); }
+function setChecked(date, ids) { setJson(checkedKey(date), ids); }
+function showToast(text) {
+  const toast = document.getElementById("toast");
+  toast.textContent = text;
+  toast.classList.add("show");
+  window.clearTimeout(showToast.t);
+  showToast.t = window.setTimeout(() => toast.classList.remove("show"), 1500);
+}
+
+function render() {
+  const info = getWeekInfo(selectedDate);
+  const dateString = dateKey(selectedDate);
+  const tasks = todayTasks(selectedDate);
+  const checked = getChecked(selectedDate).filter(id => tasks.some(t => t.id === id));
+  if (checked.length !== getChecked(selectedDate).length) setChecked(selectedDate, checked);
+  localStorage.setItem(doneKey(dateString), String(tasks.length > 0 && checked.length === tasks.length));
+
+  document.getElementById("datePicker").value = dateString;
+  document.getElementById("dateLabel").textContent = `${dateString} ${DAY_NAMES[selectedDate.getDay()]} | ${info.displayWeek}`;
+  document.getElementById("todayDone").textContent = `${checked.length}/${tasks.length}`;
+  document.getElementById("streakNum").textContent = String(calcStreak(selectedDate));
+  document.getElementById("weekNum").textContent = info.mode === "formal" ? `${info.weekIndex + 1}/16` : info.displayWeek;
+  document.getElementById("daysLeft").textContent = String(Math.max(0, daysBetween(FORMAL_END, selectedDate)));
+
+  const totalFormalDays = daysBetween(FORMAL_END, FORMAL_START) + 1;
+  const elapsed = clamp(daysBetween(selectedDate, FORMAL_START) + 1, 0, totalFormalDays);
+  const pct = Math.round((elapsed / totalFormalDays) * 100);
+  document.getElementById("progressPct").textContent = `${pct}%`;
+  document.getElementById("progressFill").style.width = `${pct}%`;
+  document.getElementById("progressLabel").textContent = "正式課綱進度：2026-04-27 到 2026-08-16";
+
+  renderHero(info);
+  renderTasks(tasks, checked);
+  renderWeekOverview(info);
+  renderScorecard(info);
+  renderPodcast(info);
+  renderPriorities();
+  renderListeningResources();
+  renderSources();
+  renderWeakness();
+}
+
+function renderHero(info) {
+  const week = info.week;
+  let title = "";
+  let desc = "";
+  let chips = [];
+  if (info.mode === "setup") {
+    const setup = SETUP_DAYS[info.setupIndex];
+    title = setup.title;
+    desc = setup.desc;
+    chips = ["暖身", "Baseline", "English", "Google", "NVIDIA", "TSMC"];
+  } else if (info.mode === "before") {
+    title = "正式課綱尚未開始";
+    desc = "先完成暖身任務，正式週從 2026-04-27 開始。";
+    chips = ["準備期"];
+  } else if (info.mode === "after") {
+    title = "16 週課綱已完成";
+    desc = "進入面試週維持模式：少新增，多複習，多模擬。";
+    chips = ["維持模式", "Mock", "Weakness repair"];
+  } else {
+    title = `${info.displayWeek}：${week.focus}`;
+    desc = `${week.phase}。本週同時覆蓋 ${week.companies.join(" / ")}，每日約 90 分鐘。`;
+    chips = [week.phase, ...week.companies, "Java", "System Design", "English"];
+  }
+  document.getElementById("phaseTitle").textContent = title;
+  document.getElementById("phaseDesc").textContent = desc;
+  document.getElementById("weekChips").innerHTML = chips.map(chip => {
+    const cls = companyClass(chip) || (chip.includes("Java") ? "java" : chip.includes("System") ? "system" : chip.includes("English") ? "english" : "");
+    return `<span class="chip ${cls}">${chip}</span>`;
+  }).join("");
+}
+
+function renderTasks(tasks, checked) {
+  document.getElementById("taskTitle").textContent = "今日任務";
+  document.getElementById("taskSub").textContent = "所有卡片都有交付物。勾選之前，請確認你真的留下程式或短筆記。";
+  document.getElementById("taskList").innerHTML = tasks.map(t => {
+    const done = checked.includes(t.id);
+    const companyCls = companyClass(t.company);
+    const categoryCls = catClass(t.cat);
+    return `
+      <article class="task ${done ? "done" : ""}">
+        <input type="checkbox" data-task-id="${t.id}" ${done ? "checked" : ""} aria-label="完成 ${t.title}">
+        <div>
+          <div class="task-meta">
+            <span class="pill ${companyCls}">${t.company}</span>
+            <span class="pill ${categoryCls}">${catLabel(t.cat)}</span>
+            <span class="pill">${t.minutes} 分鐘</span>
+          </div>
+          <div class="task-title">${t.title}</div>
+          <div class="task-detail">${t.detail}</div>
+          <div class="deliverable">${t.deliverable}</div>
+          ${linkHtml(t.links)}
+          ${demoHtml(t)}
+        </div>
+      </article>
+    `;
+  }).join("");
+  document.querySelectorAll("[data-task-id]").forEach(input => {
+    input.addEventListener("change", () => {
+      const tasksNow = todayTasks(selectedDate);
+      const ids = new Set(getChecked(selectedDate));
+      if (input.checked) ids.add(input.dataset.taskId);
+      else ids.delete(input.dataset.taskId);
+      const filtered = [...ids].filter(id => tasksNow.some(t => t.id === id));
+      setChecked(selectedDate, filtered);
+      render();
+    });
+  });
+  document.getElementById("doneBanner").classList.toggle("show", tasks.length > 0 && checked.length === tasks.length);
+}
+
+function linkHtml(links) {
+  if (!links || links.length === 0) return "";
+  return `<div class="task-links">${links.map(l => `<a href="${l.url}" target="_blank" rel="noopener">${l.label}</a>`).join("")}</div>`;
+}
+
+function escapeHtml(text) {
+  return String(text)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function demoHtml(taskItem) {
+  const demo = demoForTask(taskItem);
+  if (!demo) return "";
+  const label = taskItem.cat === "english" ? "看聽講解筆記範例" : "看範本與說明";
+  return `<details class="demo"><summary>${label}</summary><pre>${escapeHtml(demo)}</pre></details>`;
+}
+
+function demoForTask(taskItem) {
+  if (!taskItem) return "";
+  if (DEMO_SCRIPTS[taskItem.title]) return DEMO_SCRIPTS[taskItem.title];
+  if (taskItem.title === "Daily interview log") return NOTE_TEMPLATE;
+  const info = getWeekInfo(selectedDate);
+  const dow = selectedDate.getDay();
+  if (info.mode === "formal" && info.weekIndex === 0 && taskItem.cat === "english") {
+    if (taskItem.title.startsWith("聽講解") && WEEK1_ENGLISH_DEMOS[dow]) return WEEK1_ENGLISH_DEMOS[dow];
+    if (taskItem.title === "Friday listening review") return WEEK1_ENGLISH_DEMOS[5];
+  }
+  return "";
+}
+
+function renderWeekOverview(info) {
+  if (info.mode === "setup") {
+    const rows = SETUP_DAYS.map((day, idx) => `<tr><td>Day ${idx + 1}</td><td>${day.title}</td><td>${day.desc}</td></tr>`).join("");
+    document.getElementById("weekOverview").innerHTML = `<table class="week-table"><thead><tr><th>日</th><th>主題</th><th>目的</th></tr></thead><tbody>${rows}</tbody></table>`;
+    return;
+  }
+  const week = info.week || WEEKS[0];
+  const rows = [
+    ["週一", "Coding + Java", `${week.coding[0].title}；${week.java.topic}`],
+    ["週二", "Coding + System Design", `${week.coding[1].title}；${week.design.topic}`],
+    ["週三", "Coding + NVIDIA/Infra", `${week.coding[2].title}；${week.nvidia.topic}`],
+    ["週四", "Coding/Data + TSMC", `${week.coding[3].title}；${week.tsmc.topic}`],
+    ["週五", "Coding + Behavioral + Podcast", `${week.coding[4].title}；${week.behavior}`],
+    ["週六", "Mock + Review", "錯題冷解、system design mock、英文 recap"],
+    ["週日", "Light Review", "scorecard、podcast listening、下週預習"]
+  ].map(row => `<tr><td>${row[0]}</td><td>${row[1]}</td><td>${row[2]}</td></tr>`).join("");
+  document.getElementById("weekOverview").innerHTML = `<table class="week-table"><thead><tr><th>日期</th><th>任務型態</th><th>內容</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+function renderScorecard(info) {
+  const weekIndex = Math.max(0, info.weekIndex);
+  const saved = storageJson(scoreKey(weekIndex), {});
+  document.getElementById("scoreGrid").innerHTML = SCORE_FIELDS.map(([key, label, target]) => `
+    <div class="score-item">
+      <label for="score-${key}">${label} / 目標 ${target}</label>
+      <input id="score-${key}" type="number" min="0" max="20" value="${saved[key] ?? ""}" data-score-key="${key}" placeholder="0">
+    </div>
+  `).join("");
+  document.querySelectorAll("[data-score-key]").forEach(input => {
+    input.addEventListener("input", () => {
+      const next = storageJson(scoreKey(weekIndex), {});
+      next[input.dataset.scoreKey] = input.value;
+      setJson(scoreKey(weekIndex), next);
+    });
+  });
+}
+
+function renderPodcast(info) {
+  const week = info.week || WEEKS[0];
+  const prompt = [
+    "You are creating an English listening lesson for a senior Java backend engineer preparing for Google, NVIDIA, and TSMC IT.",
+    "",
+    `Week focus: ${week.focus}`,
+    `Companies: ${week.companies.join(", ")}`,
+    `Technical themes: ${week.java.topic}; ${week.design.topic}; ${week.tsmc.topic}; ${week.nvidia.topic}`,
+    "",
+    "Create an 8 to 10 minute two-host technical explanation in clear American English.",
+    "The tone should be interview-focused, concise, and practical. Avoid jokes, entertainment chatter, generic motivation, and speaking drills.",
+    "",
+    "Required structure:",
+    "1. Explain the core technical concepts with simple examples.",
+    "2. Ask and answer 8 senior-level interview questions slowly and clearly.",
+    "3. Include 8 reusable English phrases for understanding system design and trade-off discussion.",
+    "4. Include a vocabulary section with English term, Chinese meaning, and one example sentence.",
+    "5. End with a checklist of what I should understand after listening.",
+    "",
+    "This week's special focus:",
+    week.podcast,
+    "",
+    "Use only the notes and links I provide as sources. If a claim is uncertain, say it is a practice assumption."
+  ].join("\n");
+  document.getElementById("podcastPrompt").value = prompt;
+}
+
+function renderPriorities() {
+  document.getElementById("priorityList").innerHTML = PRIORITIES.map(p => `
+    <div class="priority-card">
+      <h3><span class="chip ${p.cls}">${p.company}</span></h3>
+      <ul>${p.bullets.map(b => `<li>${b}</li>`).join("")}</ul>
+      ${linkHtml(p.links)}
+    </div>
+  `).join("");
+}
+
+function renderListeningResources() {
+  document.getElementById("listeningResources").innerHTML = LISTENING_RESOURCES.map(item => `
+    <div class="priority-card">
+      <h3><span class="chip ${item.cls}">${item.title}</span></h3>
+      <ul>${item.bullets.map(b => `<li>${b}</li>`).join("")}</ul>
+      ${linkHtml(item.links)}
+    </div>
+  `).join("");
+}
+
+function renderSources() {
+  document.getElementById("sourceList").innerHTML = SOURCES.map(s => `
+    <div class="source">
+      <b>${s[0]}</b>
+      <p>${s[1]}</p>
+      <a href="${s[2]}" target="_blank" rel="noopener">開啟來源</a>
+      <p class="small" style="margin-top:8px;">Checked: ${SOURCE_DATE}</p>
+    </div>
+  `).join("");
+}
+
+function renderWeakness() {
+  const items = storageJson(weaknessKey(), []);
+  document.getElementById("weakCount").textContent = `${items.filter(x => !x.done).length} 個待回補`;
+  document.getElementById("weakList").innerHTML = items.length ? items.map((item, idx) => `
+    <label class="weak-item ${item.done ? "done" : ""}">
+      <input type="checkbox" data-weak-index="${idx}" ${item.done ? "checked" : ""}>
+      <span>${item.text}</span>
+    </label>
+  `).join("") : `<div class="small">目前沒有弱點項目。遇到講不順或重複錯的地方，就放進來。</div>`;
+  document.querySelectorAll("[data-weak-index]").forEach(input => {
+    input.addEventListener("change", () => {
+      const next = storageJson(weaknessKey(), []);
+      next[Number(input.dataset.weakIndex)].done = input.checked;
+      setJson(weaknessKey(), next);
+      renderWeakness();
+    });
+  });
+}
+
+function addWeakness() {
+  const input = document.getElementById("weakInput");
+  const text = input.value.trim();
+  if (!text) return;
+  const items = storageJson(weaknessKey(), []);
+  items.unshift({ text, done: false, createdAt: dateKey(new Date()) });
+  setJson(weaknessKey(), items);
+  input.value = "";
+  renderWeakness();
+  showToast("已新增弱點");
+}
+
+function calcStreak(fromDate) {
+  let count = 0;
+  let cursor = zeroTime(fromDate);
+  for (let i = 0; i < 400; i++) {
+    const key = dateKey(cursor);
+    if (localStorage.getItem(doneKey(key)) === "true") count++;
+    else break;
+    cursor = new Date(cursor.getFullYear(), cursor.getMonth(), cursor.getDate() - 1);
+  }
+  return count;
+}
+
+const CARD_DAY_NAMES = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+
+function stableHash(text) {
+  let hash = 0;
+  const value = String(text);
+  for (let i = 0; i < value.length; i++) {
+    hash = (hash * 31 + value.charCodeAt(i)) >>> 0;
+  }
+  return hash.toString(36);
+}
+
+function stableCardId(taskItem, meta) {
+  const seed = [
+    meta.sourceMode,
+    meta.sourceDate || "",
+    meta.sourceWeekIndex,
+    meta.sourceDow,
+    taskItem.cat,
+    taskItem.company,
+    taskItem.title,
+    taskItem.deliverable
+  ].join("|");
+  return `card-${stableHash(seed)}`;
+}
+
+function enrichCard(taskItem, index, meta) {
+  return {
+    ...taskItem,
+    id: stableCardId(taskItem, meta),
+    cardNo: index + 1,
+    ...meta
+  };
+}
+
+function buildTaskSequence() {
+  const cards = [];
+
+  SETUP_DAYS.forEach(day => {
+    const dayDate = parseYmd(day.date);
+    day.tasks.forEach(taskItem => {
+      cards.push(enrichCard(taskItem, cards.length, {
+        sourceMode: "setup",
+        sourceLabel: day.title,
+        sourceSub: day.desc,
+        sourcePhase: "暖身",
+        sourceWeekIndex: -1,
+        sourceDate: day.date,
+        sourceDow: dayDate ? dayDate.getDay() : 0
+      }));
+    });
+  });
+
+  for (let cursor = zeroTime(FORMAL_START); cursor <= FORMAL_END; cursor = new Date(cursor.getFullYear(), cursor.getMonth(), cursor.getDate() + 1)) {
+    const info = getWeekInfo(cursor);
+    const tasks = todayTasks(cursor);
+    const dow = cursor.getDay();
+    tasks.forEach(taskItem => {
+      cards.push(enrichCard(taskItem, cards.length, {
+        sourceMode: "formal",
+        sourceLabel: `第 ${info.weekIndex + 1} 週 / ${CARD_DAY_NAMES[dow]}`,
+        sourceSub: info.week?.focus || "",
+        sourcePhase: info.week?.phase || "正式課綱",
+        sourceWeekIndex: info.weekIndex,
+        sourceDate: dateKey(cursor),
+        sourceDow: dow
+      }));
+    });
+  }
+
+  return cards;
+}
+
+const ALL_CARDS = buildTaskSequence();
+const PROGRESS_EXPORT_VERSION = 1;
+let supabaseClient = null;
+let supabaseUserId = "";
+let syncTimer = 0;
+let suppressRemoteSync = false;
+let syncState = {
+  status: "offline",
+  message: "目前先用本機狀態；等雲端同步成功後會自動切換。"
+};
+let currentSession = null;
+let currentAuthUser = null;
+let currentProfile = null;
+let activeView = "board";
+
+function cardCompletedKey() { return "prep-v3:completed-cards"; }
+function cardIndexKey() { return "prep-v3:selected-card-index"; }
+
+function getCompletedCardIds() {
+  const validIds = new Set(ALL_CARDS.map(card => card.id));
+  return storageJson(cardCompletedKey(), []).filter(id => validIds.has(id));
+}
+
+function setCompletedCardIds(ids) {
+  setJson(cardCompletedKey(), ids);
+}
+
+function readAllScores() {
+  const scores = {};
+  WEEKS.forEach((_, weekIndex) => {
+    const saved = storageJson(scoreKey(weekIndex), {});
+    if (saved && typeof saved === "object" && Object.keys(saved).length) {
+      scores[`week-${weekIndex + 1}`] = saved;
+    }
+  });
+  return scores;
+}
+
+function normalizeWeaknessItems(items) {
+  if (!Array.isArray(items)) return [];
+  return items
+    .filter(item => item && typeof item.text === "string" && item.text.trim())
+    .map(item => ({
+      text: item.text.trim(),
+      done: Boolean(item.done),
+      createdAt: typeof item.createdAt === "string" ? item.createdAt : dateKey(new Date())
+    }));
+}
+
+function buildProgressSnapshot() {
+  return {
+    version: PROGRESS_EXPORT_VERSION,
+    exportedAt: new Date().toISOString(),
+    totalCards: ALL_CARDS.length,
+    selectedCardIndex,
+    selectedCardNo: selectedCardIndex + 1,
+    completedCardIds: getCompletedCardIds(),
+    weaknesses: normalizeWeaknessItems(storageJson(weaknessKey(), [])),
+    scores: readAllScores()
+  };
+}
+
+function applyProgressSnapshot(snapshot) {
+  if (!snapshot || typeof snapshot !== "object") {
+    throw new Error("進度檔格式不正確。");
+  }
+
+  suppressRemoteSync = true;
+  try {
+    const validIds = new Set(ALL_CARDS.map(card => card.id));
+    const completedCardIds = Array.isArray(snapshot.completedCardIds)
+      ? snapshot.completedCardIds.filter(id => validIds.has(id))
+      : [];
+
+    setCompletedCardIds(completedCardIds);
+
+    const maxIndex = Math.max(0, ALL_CARDS.length - 1);
+    const rawIndex = Number(snapshot.selectedCardIndex);
+    const nextIndex = Number.isInteger(rawIndex)
+      ? clamp(rawIndex, 0, maxIndex)
+      : firstIncompleteCardIndex(completedCardIds);
+    setSelectedCardIndex(nextIndex);
+
+    setJson(weaknessKey(), normalizeWeaknessItems(snapshot.weaknesses));
+
+    WEEKS.forEach((_, weekIndex) => {
+      const value = snapshot.scores && typeof snapshot.scores === "object"
+        ? snapshot.scores[`week-${weekIndex + 1}`]
+        : {};
+      setJson(scoreKey(weekIndex), value && typeof value === "object" ? value : {});
+    });
+  } finally {
+    suppressRemoteSync = false;
+  }
+}
+
+function progressFilename() {
+  const stamp = new Date().toISOString().replaceAll(":", "").replace(/\.\d{3}Z$/, "Z");
+  return `interview-progress-${stamp}.json`;
+}
+
+function downloadProgressSnapshot() {
+  const snapshot = buildProgressSnapshot();
+  const blob = new Blob([JSON.stringify(snapshot, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = progressFilename();
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+  return snapshot;
+}
+
+function setSyncState(status, message) {
+  syncState = { status, message };
+  const node = document.getElementById("progressStatus");
+  if (node) renderProgressPanel();
+}
+
+function buildRemoteProgressRow() {
+  const snapshot = buildProgressSnapshot();
+  return {
+    user_id: supabaseUserId,
+    selected_card_index: snapshot.selectedCardIndex,
+    completed_card_ids: snapshot.completedCardIds,
+    weaknesses: snapshot.weaknesses,
+    scores: snapshot.scores,
+    updated_at: new Date().toISOString()
+  };
+}
+
+function scheduleRemoteSync() {
+  if (suppressRemoteSync || !supabaseClient || !supabaseUserId) return;
+  setSyncState("saving", "雲端同步中...");
+  window.clearTimeout(syncTimer);
+  syncTimer = window.setTimeout(async () => {
+    try {
+      const { error } = await supabaseClient
+        .from(SUPABASE_PROGRESS_TABLE)
+        .upsert(buildRemoteProgressRow(), { onConflict: "user_id" });
+      if (error) throw error;
+      const nowText = new Date().toLocaleTimeString("zh-TW", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+      setSyncState("ready", `雲端同步完成，最後更新 ${nowText}。`);
+    } catch (error) {
+      console.error(error);
+      setSyncState("error", `雲端同步失敗：${error.message || "請檢查 Supabase 設定。"}`);
+    }
+  }, 500);
+}
+
+async function fetchCurrentProfile(userId) {
+  const { data, error } = await supabaseClient
+    .from("profiles")
+    .select("id, username, role, created_at")
+    .eq("id", userId)
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+async function loadRemoteProgress() {
+  const { data, error } = await supabaseClient
+    .from(SUPABASE_PROGRESS_TABLE)
+    .select("selected_card_index, completed_card_ids, weaknesses, scores, updated_at")
+    .eq("user_id", supabaseUserId)
+    .maybeSingle();
+  if (error) throw error;
+
+  if (data) {
+    applyProgressSnapshot({
+      selectedCardIndex: data.selected_card_index,
+      completedCardIds: Array.isArray(data.completed_card_ids) ? data.completed_card_ids : [],
+      weaknesses: Array.isArray(data.weaknesses) ? data.weaknesses : [],
+      scores: data.scores && typeof data.scores === "object" ? data.scores : {}
+    });
+    const updatedText = data.updated_at
+      ? new Date(data.updated_at).toLocaleString("zh-TW", { hour12: false })
+      : "剛剛";
+    setSyncState("ready", `雲端進度已載入；最後同步 ${updatedText}。`);
+  } else {
+    const { error: insertError } = await supabaseClient
+      .from(SUPABASE_PROGRESS_TABLE)
+      .upsert(buildRemoteProgressRow(), { onConflict: "user_id" });
+    if (insertError) throw insertError;
+    setSyncState("ready", "已建立你的第一份雲端進度。");
+  }
+}
+
+async function loadUsersProgress() {
+  if (!supabaseClient || !currentSession) return;
+  const { data, error } = await supabaseClient.rpc(SUPABASE_PROGRESS_OVERVIEW_RPC);
+  if (error) {
+    document.getElementById("usersProgressTable").innerHTML = `<div class="danger-note">讀取所有使用者進度失敗：${escapeHtml(error.message || "請稍後再試。")}</div>`;
+    return;
+  }
+
+  if (!data || !data.length) {
+    document.getElementById("usersProgressTable").innerHTML = `<div class="small">目前還沒有使用者資料。</div>`;
+    return;
+  }
+
+  const rows = data.map(item => `
+    <tr ${item.user_id === supabaseUserId ? `style="background: rgba(110, 168, 254, 0.06);"` : ""}>
+      <td>${escapeHtml(item.username || "(unknown)")}</td>
+      <td>${escapeHtml(item.role || "member")}</td>
+      <td>${Number(item.completed_count || 0)}/${ALL_CARDS.length}</td>
+      <td>#${Number(item.current_card_no || 1)}</td>
+      <td>${item.updated_at ? escapeHtml(new Date(item.updated_at).toLocaleString("zh-TW", { hour12: false })) : "-"}</td>
+    </tr>
+  `).join("");
+
+  document.getElementById("usersProgressTable").innerHTML = `
+    <table class="week-table">
+      <thead>
+        <tr><th>使用者</th><th>角色</th><th>完成卡數</th><th>目前卡號</th><th>最近同步</th></tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+}
+
+async function handleSignedInSession(session) {
+  currentSession = session;
+  currentAuthUser = session.user;
+  supabaseUserId = session.user.id;
+  currentProfile = await fetchCurrentProfile(supabaseUserId);
+  updateUserPill();
+  document.getElementById("authShell").classList.add("hidden");
+  document.getElementById("appShell").classList.remove("hidden");
+  setSyncState("connecting", "正在載入你的雲端進度...");
+  await loadRemoteProgress();
+  await loadUsersProgress();
+  render();
+}
+
+function showLoggedOutState() {
+  currentSession = null;
+  currentAuthUser = null;
+  currentProfile = null;
+  supabaseUserId = "";
+  setSyncState("offline", "請先登入；登入後就會同步你的跨裝置進度。");
+  document.getElementById("appShell").classList.add("hidden");
+  document.getElementById("authShell").classList.remove("hidden");
+  document.getElementById("usersProgressTable").innerHTML = "";
+  updateUserPill();
+}
+
+async function initSupabaseAuth() {
+  if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
+    setSyncState("offline", "尚未設定 Supabase 連線。");
+    return;
+  }
+  if (!window.supabase || typeof window.supabase.createClient !== "function") {
+    setErrorBox("Supabase SDK 載入失敗。");
+    return;
+  }
+
+  supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+  supabaseClient.auth.onAuthStateChange(async (_event, session) => {
+    if (!session) {
+      showLoggedOutState();
+      return;
+    }
+    try {
+      await handleSignedInSession(session);
+    } catch (error) {
+      console.error(error);
+      setErrorBox(`登入後初始化失敗：${error.message || "請檢查 Supabase schema。"}`);
+      showLoggedOutState();
+    }
+  });
+
+  try {
+    const { data, error } = await supabaseClient.auth.getSession();
+    if (error) throw error;
+    if (data.session) await handleSignedInSession(data.session);
+    else showLoggedOutState();
+  } catch (error) {
+    console.error(error);
+    setErrorBox(`Supabase 連線失敗：${error.message || "請檢查金鑰與登入設定。"}`);
+    showLoggedOutState();
+  }
+}
+
+function renderProgressPanel() {
+  const snapshot = buildProgressSnapshot();
+  const openWeaknesses = snapshot.weaknesses.filter(item => !item.done).length;
+  document.getElementById("progressStatus").textContent =
+    `已完成 ${snapshot.completedCardIds.length}/${snapshot.totalCards} 張；未完成弱點 ${openWeaknesses} 項。${syncState.message}`;
+}
+
+function firstIncompleteCardIndex(completedIds = getCompletedCardIds()) {
+  const done = new Set(completedIds);
+  const index = ALL_CARDS.findIndex(card => !done.has(card.id));
+  return index === -1 ? ALL_CARDS.length - 1 : index;
+}
+
+function getInitialCardIndex() {
+  const params = new URLSearchParams(location.search);
+  const queryCard = Number(params.get("card"));
+  if (Number.isInteger(queryCard) && queryCard >= 1 && queryCard <= ALL_CARDS.length) return queryCard - 1;
+  const saved = Number(localStorage.getItem(cardIndexKey()));
+  if (Number.isInteger(saved) && saved >= 0 && saved < ALL_CARDS.length) return saved;
+  return firstIncompleteCardIndex();
+}
+
+let selectedCardIndex = getInitialCardIndex();
+
+function setSelectedCardIndex(index) {
+  selectedCardIndex = clamp(index, 0, ALL_CARDS.length - 1);
+  localStorage.setItem(cardIndexKey(), String(selectedCardIndex));
+  scheduleRemoteSync();
+}
+
+function demoForTask(taskItem) {
+  if (!taskItem) return "";
+  if (DEMO_SCRIPTS[taskItem.title]) return DEMO_SCRIPTS[taskItem.title];
+  if (taskItem.title === "Daily interview log") return NOTE_TEMPLATE;
+  if (taskItem.sourceMode === "formal" && taskItem.sourceWeekIndex === 0 && taskItem.cat === "english") {
+    if (taskItem.title.startsWith("聽講解") && WEEK1_ENGLISH_DEMOS[taskItem.sourceDow]) return WEEK1_ENGLISH_DEMOS[taskItem.sourceDow];
+    if (taskItem.title === "Friday listening review") return WEEK1_ENGLISH_DEMOS[5];
+  }
+  return "";
+}
+
+function renderHero(card, completedIds) {
+  const chips = [
+    card.sourcePhase,
+    card.company,
+    catLabel(card.cat),
+    card.sourceMode === "formal" ? `第 ${card.sourceWeekIndex + 1} 週` : "暖身"
+  ].filter(Boolean);
+
+  document.getElementById("phaseTitle").textContent = `卡片 #${card.cardNo}：${card.title}`;
+  document.getElementById("phaseDesc").textContent = `${card.sourceLabel}${card.sourceSub ? " · " + card.sourceSub : ""}`;
+  document.getElementById("weekChips").innerHTML = chips.map(chip => {
+    const cls = companyClass(chip) || (chip.includes("Java") ? "java" : chip.includes("System") ? "system" : chip.includes("English") ? "english" : "");
+    return `<span class="chip ${cls}">${chip}</span>`;
+  }).join("");
+
+  document.getElementById("dateLabel").textContent = `卡號 #${card.cardNo} | ${card.sourceLabel}`;
+  document.getElementById("todayDone").textContent = `${completedIds.length}/${ALL_CARDS.length}`;
+  document.getElementById("streakNum").textContent = String(card.cardNo);
+  document.getElementById("weekNum").textContent = card.sourceMode === "formal" ? `${card.sourceWeekIndex + 1}/16` : "暖身";
+  document.getElementById("daysLeft").textContent = String(ALL_CARDS.length - completedIds.length);
+
+  const pct = Math.round((completedIds.length / ALL_CARDS.length) * 100);
+  document.getElementById("progressPct").textContent = `${pct}%`;
+  document.getElementById("progressFill").style.width = `${pct}%`;
+  document.getElementById("progressLabel").textContent = `卡片進度：共 ${ALL_CARDS.length} 張，做完一張就往下一張走`;
+}
+
+function renderTasks(card, completedIds) {
+  const done = completedIds.includes(card.id);
+  document.getElementById("taskTitle").textContent = "目前卡片";
+  document.getElementById("taskSub").textContent = "只做這一張。做完勾選，下次直接接下一張未完成卡。";
+  document.getElementById("taskList").innerHTML = `
+    <article class="task ${done ? "done" : ""}">
+      <input type="checkbox" data-task-id="${card.id}" ${done ? "checked" : ""} aria-label="完成 ${card.title}">
+      <div>
+        <div class="task-meta">
+          <span class="pill ${companyClass(card.company)}">${card.company}</span>
+          <span class="pill ${catClass(card.cat)}">${catLabel(card.cat)}</span>
+          <span class="pill">${card.minutes} 分鐘</span>
+          <span class="pill">#${card.cardNo}</span>
+        </div>
+        <div class="task-title">${card.title}</div>
+        <div class="task-detail">${card.detail}</div>
+        <div class="deliverable">${card.deliverable}</div>
+        ${linkHtml(card.links)}
+        ${demoHtml(card)}
+      </div>
+    </article>
+  `;
+
+  document.querySelectorAll("[data-task-id]").forEach(input => {
+    input.addEventListener("change", () => {
+      const ids = new Set(getCompletedCardIds());
+      if (input.checked) ids.add(card.id);
+      else ids.delete(card.id);
+      setCompletedCardIds([...ids]);
+
+      if (input.checked) {
+        setSelectedCardIndex(firstIncompleteCardIndex([...ids]));
+        showToast("已完成，已跳到下一張未完成卡");
+      } else {
+        setSelectedCardIndex(card.cardNo - 1);
+        showToast("已取消完成");
+      }
+      render();
+    });
+  });
+
+  const allDone = completedIds.length === ALL_CARDS.length;
+  const banner = document.getElementById("doneBanner");
+  banner.textContent = allDone ? "全部卡片都完成了。接下來就是反覆複習弱點與模擬。" : "完成這張後就繼續下一張，不用切日期。";
+  banner.classList.toggle("show", allDone);
+}
+
+function renderWeekOverview() {
+  const completed = new Set(getCompletedCardIds());
+  const upcoming = ALL_CARDS.slice(selectedCardIndex, Math.min(selectedCardIndex + 8, ALL_CARDS.length));
+  const rows = upcoming.map(card => `
+    <tr>
+      <td>#${card.cardNo}</td>
+      <td>${completed.has(card.id) ? "已完成" : "待做"}</td>
+      <td>${card.title}</td>
+      <td>${card.company} / ${catLabel(card.cat)}</td>
+      <td>${card.sourceLabel}</td>
+    </tr>
+  `).join("");
+  document.getElementById("weekOverview").innerHTML = `
+    <table class="week-table">
+      <thead>
+        <tr><th>卡號</th><th>狀態</th><th>內容</th><th>類型</th><th>來源</th></tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+}
+
+function renderCompletedList(completedIds) {
+  const completedSet = new Set(completedIds);
+  const completedCards = ALL_CARDS.filter(card => completedSet.has(card.id));
+
+  if (!completedCards.length) {
+    document.getElementById("completedList").innerHTML = `<div class="small">目前還沒有完成卡片。先從 #1 開始，做完後這裡就會開始累積。</div>`;
+    return;
+  }
+
+  const rows = completedCards.map(card => `
+    <tr>
+      <td>#${card.cardNo}</td>
+      <td>${card.title}</td>
+      <td>${card.company} / ${catLabel(card.cat)}</td>
+      <td>${card.sourceLabel}</td>
+      <td><button type="button" data-jump-card="${card.cardNo}">跳到這張</button></td>
+    </tr>
+  `).join("");
+
+  document.getElementById("completedList").innerHTML = `
+    <div class="small" style="margin-bottom:8px;">目前共完成 ${completedCards.length} 張卡。</div>
+    <table class="week-table">
+      <thead>
+        <tr><th>卡號</th><th>內容</th><th>類型</th><th>來源</th><th>操作</th></tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+
+  document.querySelectorAll("[data-jump-card]").forEach(button => {
+    button.addEventListener("click", () => {
+      const cardNo = Number(button.dataset.jumpCard);
+      if (!Number.isInteger(cardNo)) return;
+      setSelectedCardIndex(cardNo - 1);
+      render();
+      showToast(`已跳到卡片 #${cardNo}`);
+    });
+  });
+}
+
+function render() {
+  const completedIds = getCompletedCardIds();
+  if (!ALL_CARDS[selectedCardIndex]) setSelectedCardIndex(firstIncompleteCardIndex(completedIds));
+  const card = ALL_CARDS[selectedCardIndex] || ALL_CARDS[0];
+  document.getElementById("cardPicker").value = card.cardNo;
+  renderHero(card, completedIds);
+  renderTasks(card, completedIds);
+  renderWeekOverview();
+  renderCompletedList(completedIds);
+  renderScorecard({ weekIndex: Math.max(0, card.sourceWeekIndex) });
+  renderPodcast({ week: card.sourceMode === "formal" ? WEEKS[card.sourceWeekIndex] : WEEKS[0] });
+  renderPriorities();
+  renderListeningResources();
+  renderSources();
+  renderWeakness();
+  renderProgressPanel();
+}
+
+document.getElementById("cardPicker").addEventListener("change", event => {
+  const no = Number(event.target.value);
+  if (Number.isInteger(no) && no >= 1 && no <= ALL_CARDS.length) {
+    setSelectedCardIndex(no - 1);
+    render();
+  }
+});
+document.getElementById("prevBtn").addEventListener("click", () => {
+  setSelectedCardIndex(selectedCardIndex - 1);
+  render();
+});
+document.getElementById("nextTodoBtn").addEventListener("click", () => {
+  setSelectedCardIndex(firstIncompleteCardIndex());
+  render();
+});
+document.getElementById("addWeakBtn").addEventListener("click", addWeakness);
+document.getElementById("weakInput").addEventListener("keydown", event => {
+  if (event.key === "Enter") addWeakness();
+});
+document.getElementById("clearWeakBtn").addEventListener("click", () => {
+  const items = storageJson(weaknessKey(), []).filter(item => !item.done);
+  setJson(weaknessKey(), items);
+  renderWeakness();
+  showToast("已清除完成項目");
+});
+document.getElementById("copyPodcastBtn").addEventListener("click", async () => {
+  const textarea = document.getElementById("podcastPrompt");
+  try {
+    await navigator.clipboard.writeText(textarea.value);
+    document.getElementById("copyStatus").textContent = "已複製，可以貼到 NotebookLM / Gemini。";
+  } catch {
+    textarea.focus();
+    textarea.select();
+    document.execCommand("copy");
+    document.getElementById("copyStatus").textContent = "已選取 prompt；若未自動複製，請按 Ctrl+C。";
+  }
+  showToast("Podcast prompt ready");
+});
+document.getElementById("exportProgressBtn").addEventListener("click", () => {
+  const snapshot = downloadProgressSnapshot();
+  document.getElementById("progressStatus").textContent =
+    `已匯出 ${snapshot.completedCardIds.length} 張完成卡號；建議把檔案存成 progress.local.json。`;
+  showToast("進度 JSON 已匯出");
+});
+document.getElementById("importProgressBtn").addEventListener("click", () => {
+  document.getElementById("progressFileInput").click();
+});
+document.getElementById("progressFileInput").addEventListener("change", async event => {
+  const [file] = event.target.files || [];
+  event.target.value = "";
+  if (!file) return;
+  try {
+    const text = await file.text();
+    const snapshot = JSON.parse(text);
+    applyProgressSnapshot(snapshot);
+    render();
+    scheduleRemoteSync();
+    document.getElementById("progressStatus").textContent =
+      `已匯入 ${file.name}；目前完成 ${getCompletedCardIds().length}/${ALL_CARDS.length} 張。`;
+    showToast("進度 JSON 已匯入");
+  } catch (error) {
+    document.getElementById("progressStatus").textContent =
+      `匯入失敗：${error && error.message ? error.message : "請確認是有效的 JSON 檔。"}`
+    ;
+    showToast("匯入失敗");
+  }
+});
+
+document.getElementById("loginTabBtn").addEventListener("click", () => setAuthMode("login"));
+document.getElementById("registerTabBtn").addEventListener("click", () => setAuthMode("register"));
+document.getElementById("viewBoardBtn").addEventListener("click", () => setActiveView("board"));
+document.getElementById("viewUsersBtn").addEventListener("click", async () => {
+  setActiveView("users");
+  await loadUsersProgress();
+});
+document.getElementById("refreshUsersBtn").addEventListener("click", async () => {
+  await loadUsersProgress();
+  showToast("已更新所有使用者進度");
+});
+document.getElementById("logoutBtn").addEventListener("click", async () => {
+  if (!supabaseClient) return;
+  await supabaseClient.auth.signOut();
+  showToast("已登出");
+});
+document.getElementById("loginForm").addEventListener("submit", async event => {
+  event.preventDefault();
+  setErrorBox("");
+  const username = normalizeUsername(document.getElementById("loginUsername").value);
+  const password = document.getElementById("loginPassword").value;
+  if (!username || !password) {
+    setErrorBox("請輸入 username 和 password。");
+    return;
+  }
+  if (!supabaseClient) {
+    setErrorBox("Supabase 尚未初始化完成。");
+    return;
+  }
+  setAuthStatus("登入中...");
+  const { error } = await supabaseClient.auth.signInWithPassword({
+    email: usernameToEmail(username),
+    password
+  });
+  if (error) {
+    setAuthStatus("登入失敗，請再試一次。");
+    setErrorBox(error.message || "登入失敗。");
+    return;
+  }
+  setAuthStatus("登入成功，正在載入資料...");
+});
+document.getElementById("registerForm").addEventListener("submit", async event => {
+  event.preventDefault();
+  setErrorBox("");
+  const username = normalizeUsername(document.getElementById("registerUsername").value);
+  const password = document.getElementById("registerPassword").value;
+  if (!username || !password) {
+    setErrorBox("請輸入 username 和 password。");
+    return;
+  }
+  if (password.length < 8) {
+    setErrorBox("密碼至少需要 8 碼。");
+    return;
+  }
+  if (!supabaseClient) {
+    setErrorBox("Supabase 尚未初始化完成。");
+    return;
+  }
+  setAuthStatus("建立帳號中...", "registerStatus");
+  const { data, error } = await supabaseClient.auth.signUp({
+    email: usernameToEmail(username),
+    password,
+    options: {
+      data: { username }
+    }
+  });
+  if (error) {
+    setAuthStatus("建立帳號失敗。", "registerStatus");
+    setErrorBox(error.message || "建立帳號失敗。");
+    return;
+  }
+  if (!data.session) {
+    setAuthStatus("帳號建立成功，但目前沒有 session。", "registerStatus");
+    setErrorBox("Supabase 的 Confirm Email 很可能還沒關掉。請到 Authentication -> Sign In / Providers -> Email，把 Confirm Email 關掉後再重試。");
+    return;
+  }
+  setAuthStatus("帳號建立成功，正在載入資料...", "registerStatus");
+});
+
+setAuthMode("login");
+setActiveView("board");
+render();
+initSupabaseAuth();
+</script>
+</body>
+</html>
