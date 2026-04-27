@@ -2082,6 +2082,9 @@ function scheduleRemoteSync() {
       if (error) throw error;
       const nowText = new Date().toLocaleTimeString("zh-TW", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
       setSyncState("ready", `雲端同步完成，最後更新 ${nowText}。`);
+      if (activeView === "users") {
+        await loadUsersProgress();
+      }
     } catch (error) {
       console.error(error);
       setSyncState("error", `雲端同步失敗：${error.message || "請檢查 Supabase 設定。"}`);
@@ -2197,18 +2200,18 @@ async function initSupabaseAuth() {
   }
 
   supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
-  supabaseClient.auth.onAuthStateChange(async (_event, session) => {
+  supabaseClient.auth.onAuthStateChange((_event, session) => {
     if (!session) {
       showLoggedOutState();
       return;
     }
-    try {
-      await handleSignedInSession(session);
-    } catch (error) {
-      console.error(error);
-      setErrorBox(`登入後初始化失敗：${error.message || "請檢查 Supabase schema。"}`);
-      showLoggedOutState();
-    }
+    window.setTimeout(() => {
+      handleSignedInSession(session).catch(error => {
+        console.error(error);
+        setErrorBox(`登入後初始化失敗：${error.message || "請檢查 Supabase schema。"}`);
+        showLoggedOutState();
+      });
+    }, 0);
   });
 
   try {
