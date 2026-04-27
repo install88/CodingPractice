@@ -1951,6 +1951,7 @@ let currentSession = null;
 let currentAuthUser = null;
 let currentProfile = null;
 let activeView = "board";
+let authBootstrapComplete = false;
 
 function cardCompletedKey() { return "prep-v3:completed-cards"; }
 function cardIndexKey() { return "prep-v3:selected-card-index"; }
@@ -2163,17 +2164,43 @@ async function loadUsersProgress() {
   `;
 }
 
+function fallbackProfileFromSession(session) {
+  const usernameFromMeta = session?.user?.user_metadata?.username;
+  const email = session?.user?.email || "";
+  return {
+    id: session?.user?.id || "",
+    username: usernameFromMeta || (email.includes("@") ? email.split("@")[0] : email || "member"),
+    role: currentProfile?.role || "member",
+    created_at: session?.user?.created_at || null
+  };
+}
+
 async function handleSignedInSession(session) {
   currentSession = session;
   currentAuthUser = session.user;
   supabaseUserId = session.user.id;
-  currentProfile = await fetchCurrentProfile(supabaseUserId);
-  updateUserPill();
   document.getElementById("authShell").classList.add("hidden");
   document.getElementById("appShell").classList.remove("hidden");
+  try {
+    currentProfile = await fetchCurrentProfile(supabaseUserId);
+  } catch (error) {
+    console.warn("Profile load failed, using session metadata fallback.", error);
+    currentProfile = fallbackProfileFromSession(session);
+    setErrorBox(`已登入，但讀取個人資料失敗：${error.message || "請稍後再試。"}`);
+  }
+  updateUserPill();
   setSyncState("connecting", "正在載入你的雲端進度...");
-  await loadRemoteProgress();
-  await loadUsersProgress();
+  try {
+    await loadRemoteProgress();
+  } catch (error) {
+    console.error(error);
+    setSyncState("error", `已登入，但雲端進度載入失敗：${error.message || "請稍後再試。"}`);
+  }
+  try {
+    await loadUsersProgress();
+  } catch (error) {
+    console.error(error);
+  }
   render();
 }
 
@@ -2199,9 +2226,16 @@ async function initSupabaseAuth() {
     return;
   }
 
-  supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
-  supabaseClient.auth.onAuthStateChange((_event, session) => {
+  supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: false
+    }
+  });
+  supabaseClient.auth.onAuthStateChange((event, session) => {
     if (!session) {
+      if (!authBootstrapComplete || event === "INITIAL_SESSION") return;
       showLoggedOutState();
       return;
     }
@@ -2209,7 +2243,7 @@ async function initSupabaseAuth() {
       handleSignedInSession(session).catch(error => {
         console.error(error);
         setErrorBox(`登入後初始化失敗：${error.message || "請檢查 Supabase schema。"}`);
-        showLoggedOutState();
+        setSyncState("error", `已登入，但初始化失敗：${error.message || "請稍後再試。"}`);
       });
     }, 0);
   });
@@ -2217,10 +2251,12 @@ async function initSupabaseAuth() {
   try {
     const { data, error } = await supabaseClient.auth.getSession();
     if (error) throw error;
+    authBootstrapComplete = true;
     if (data.session) await handleSignedInSession(data.session);
     else showLoggedOutState();
   } catch (error) {
     console.error(error);
+    authBootstrapComplete = true;
     setErrorBox(`Supabase 連線失敗：${error.message || "請檢查金鑰與登入設定。"}`);
     showLoggedOutState();
   }
