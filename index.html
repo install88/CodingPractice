@@ -1952,6 +1952,8 @@ let currentAuthUser = null;
 let currentProfile = null;
 let activeView = "board";
 let authBootstrapComplete = false;
+let authHydrationPromise = null;
+let lastHandledSessionKey = "";
 
 function cardCompletedKey() { return "prep-v3:completed-cards"; }
 function cardIndexKey() { return "prep-v3:selected-card-index"; }
@@ -2175,6 +2177,11 @@ function fallbackProfileFromSession(session) {
   };
 }
 
+function sessionKey(session) {
+  if (!session) return "";
+  return session.access_token || `${session.user?.id || ""}:${session.expires_at || ""}`;
+}
+
 async function handleSignedInSession(session) {
   currentSession = session;
   currentAuthUser = session.user;
@@ -2204,11 +2211,29 @@ async function handleSignedInSession(session) {
   render();
 }
 
+function hydrateSignedInSession(session) {
+  const nextKey = sessionKey(session);
+  if (!nextKey) return Promise.resolve();
+  if (nextKey === lastHandledSessionKey) return Promise.resolve();
+  if (authHydrationPromise) return authHydrationPromise;
+
+  authHydrationPromise = handleSignedInSession(session)
+    .then(() => {
+      lastHandledSessionKey = nextKey;
+    })
+    .finally(() => {
+      authHydrationPromise = null;
+    });
+
+  return authHydrationPromise;
+}
+
 function showLoggedOutState() {
   currentSession = null;
   currentAuthUser = null;
   currentProfile = null;
   supabaseUserId = "";
+  lastHandledSessionKey = "";
   setSyncState("offline", "請先登入；登入後就會同步你的跨裝置進度。");
   document.getElementById("appShell").classList.add("hidden");
   document.getElementById("authShell").classList.remove("hidden");
@@ -2240,7 +2265,7 @@ async function initSupabaseAuth() {
       return;
     }
     window.setTimeout(() => {
-      handleSignedInSession(session).catch(error => {
+      hydrateSignedInSession(session).catch(error => {
         console.error(error);
         setErrorBox(`登入後初始化失敗：${error.message || "請檢查 Supabase schema。"}`);
         setSyncState("error", `已登入，但初始化失敗：${error.message || "請稍後再試。"}`);
@@ -2252,7 +2277,7 @@ async function initSupabaseAuth() {
     const { data, error } = await supabaseClient.auth.getSession();
     if (error) throw error;
     authBootstrapComplete = true;
-    if (data.session) await handleSignedInSession(data.session);
+    if (data.session) await hydrateSignedInSession(data.session);
     else showLoggedOutState();
   } catch (error) {
     console.error(error);
