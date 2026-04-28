@@ -1929,12 +1929,6 @@ async function loadAiConfig() {
 }
 
 async function sendAiRequest(mode = "custom") {
-  if (!currentSession?.access_token) {
-    aiState.lastError = "請先登入後再使用 NVIDIA 助理。";
-    aiState.status = "尚未登入。";
-    renderAiAssistant();
-    return;
-  }
   if (!aiConfig.enabled) {
     aiState.lastError = aiConfig.reason || "NVIDIA 助理尚未啟用。";
     aiState.status = "NVIDIA 助理尚未啟用。";
@@ -1959,21 +1953,50 @@ async function sendAiRequest(mode = "custom") {
   renderAiAssistant();
 
   try {
-    const response = await fetch("/api/nvidia/chat", {
+    const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
+    if (sessionError) throw sessionError;
+    if (!sessionData.session?.access_token) {
+      throw new Error("請先登入後再使用 NVIDIA 助理。");
+    }
+    currentSession = sessionData.session;
+    currentAuthUser = sessionData.session.user;
+    supabaseUserId = sessionData.session.user?.id || supabaseUserId;
+
+    const requestBody = {
+      model: document.getElementById("aiModelSelect").value,
+      temperature: 0.25,
+      max_tokens: 900,
+      messages: buildAiMessages(mode, customPrompt)
+    };
+
+    let response = await fetch("/api/nvidia/chat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${currentSession.access_token}`
+        Authorization: `Bearer ${sessionData.session.access_token}`
       },
-      body: JSON.stringify({
-        model: document.getElementById("aiModelSelect").value,
-        temperature: 0.25,
-        max_tokens: 900,
-        messages: buildAiMessages(mode, customPrompt)
-      })
+      body: JSON.stringify(requestBody)
     });
 
-    const data = await response.json().catch(() => ({}));
+    let data = await response.json().catch(() => ({}));
+    if (response.status === 401) {
+      const { data: retrySessionData } = await supabaseClient.auth.getSession();
+      if (retrySessionData.session?.access_token && retrySessionData.session.access_token !== sessionData.session.access_token) {
+        currentSession = retrySessionData.session;
+        currentAuthUser = retrySessionData.session.user;
+        supabaseUserId = retrySessionData.session.user?.id || supabaseUserId;
+        response = await fetch("/api/nvidia/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${retrySessionData.session.access_token}`
+          },
+          body: JSON.stringify(requestBody)
+        });
+        data = await response.json().catch(() => ({}));
+      }
+    }
+
     if (!response.ok) {
       throw new Error(data.details || data.error || "NVIDIA API 呼叫失敗。");
     }
