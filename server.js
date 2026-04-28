@@ -101,7 +101,14 @@ function extractBearerToken(req) {
 
 async function verifySupabaseUser(req) {
   const token = extractBearerToken(req);
-  if (!token) return null;
+  if (!token) {
+    return {
+      ok: false,
+      reason: "missing_bearer_token",
+      status: 401,
+      user: null
+    };
+  }
 
   const response = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
     headers: {
@@ -110,8 +117,23 @@ async function verifySupabaseUser(req) {
     }
   });
 
-  if (!response.ok) return null;
-  return response.json();
+  if (!response.ok) {
+    const rawText = await response.text().catch(() => "");
+    return {
+      ok: false,
+      reason: "supabase_user_lookup_failed",
+      status: response.status,
+      details: rawText || "Unable to verify Supabase user.",
+      user: null
+    };
+  }
+
+  return {
+    ok: true,
+    reason: "verified",
+    status: 200,
+    user: await response.json()
+  };
 }
 
 function sanitizeMessages(messages) {
@@ -146,13 +168,17 @@ async function handleNvidiaChat(req, res) {
     return;
   }
 
-  const user = await verifySupabaseUser(req);
-  if (!user) {
+  const authResult = await verifySupabaseUser(req);
+  if (!authResult.ok) {
     sendJson(res, 401, {
-      error: "請先登入後再使用 NVIDIA 助理。"
+      error: "請先登入後再使用 NVIDIA 助理。",
+      auth_reason: authResult.reason,
+      auth_status: authResult.status,
+      details: authResult.details || ""
     });
     return;
   }
+  const user = authResult.user;
 
   let body;
   try {

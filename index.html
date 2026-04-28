@@ -1998,7 +1998,8 @@ async function sendAiRequest(mode = "custom") {
     }
 
     if (!response.ok) {
-      throw new Error(data.details || data.error || "NVIDIA API 呼叫失敗。");
+      const extra = data.auth_reason ? ` (${data.auth_reason}${data.auth_status ? `:${data.auth_status}` : ""})` : "";
+      throw new Error(`${data.details || data.error || "NVIDIA API 呼叫失敗。"}${extra}`);
     }
 
     aiState.model = data.model || document.getElementById("aiModelSelect").value;
