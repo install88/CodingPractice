@@ -3609,6 +3609,13 @@ document.getElementById("aiPromptInput").addEventListener("input", event => {
   const chatInput = document.getElementById("chatInput");
   if (chatInput && chatInput.value !== event.target.value) chatInput.value = event.target.value;
 });
+document.getElementById("aiPromptInput").addEventListener("keydown", event => {
+  if (event.isComposing) return;
+  if (event.key === "Enter" && !event.shiftKey) {
+    event.preventDefault();
+    sendAiRequest("custom");
+  }
+});
 document.getElementById("aiModelSelect").addEventListener("change", event => {
   aiState.model = event.target.value;
   const chatModel = document.getElementById("chatModelSelect");
@@ -3647,7 +3654,8 @@ document.getElementById("chatInput").addEventListener("input", event => {
   if (aiPrompt && aiPrompt.value !== event.target.value) aiPrompt.value = event.target.value;
 });
 document.getElementById("chatInput").addEventListener("keydown", event => {
-  if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+  if (event.isComposing) return;
+  if (event.key === "Enter" && !event.shiftKey) {
     event.preventDefault();
     sendAiRequest("custom");
   }
