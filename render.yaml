@@ -1,10 +1,6 @@
 services:
   - type: web
     name: interview-prep
-    runtime: static
+    runtime: node
     buildCommand: ""
-    staticPublishPath: .
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
+    startCommand: node server.js

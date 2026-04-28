@@ -4,23 +4,28 @@ setlocal
 set "PORT=4173"
 set "HOST=127.0.0.1"
 set "ROOT=%~dp0"
-set "URL=http://%HOST%:%PORT%/index.html"
+set "URL=http://%HOST%:%PORT%/"
 
 for /f %%P in ('powershell -NoProfile -Command "$conn = Get-NetTCPConnection -LocalPort %PORT% -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty OwningProcess; if ($conn) { Write-Output $conn }"') do set "EXISTING_PID=%%P"
 
 if defined EXISTING_PID goto open_browser
 
-where py >nul 2>nul
+where node >nul 2>nul
 if %errorlevel%==0 (
-  start "Interview Prep Server" /min cmd /c py -3 -m http.server %PORT% --bind %HOST% --directory "%ROOT%"
+  start "Interview Prep Server" /min cmd /c node "%ROOT%server.js"
 ) else (
-  where python >nul 2>nul
+  where py >nul 2>nul
   if %errorlevel%==0 (
-    start "Interview Prep Server" /min cmd /c python -m http.server %PORT% --bind %HOST% --directory "%ROOT%"
+    start "Interview Prep Server (Static)" /min cmd /c py -3 -m http.server %PORT% --bind %HOST% --directory "%ROOT%"
   ) else (
-    echo Python 3 not found. Please install Python 3, then try again.
-    pause
-    exit /b 1
+    where python >nul 2>nul
+    if %errorlevel%==0 (
+      start "Interview Prep Server (Static)" /min cmd /c python -m http.server %PORT% --bind %HOST% --directory "%ROOT%"
+    ) else (
+      echo Node.js or Python 3 not found. Please install one of them, then try again.
+      pause
+      exit /b 1
+    )
   )
 )
 
