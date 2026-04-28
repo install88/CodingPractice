@@ -13,6 +13,7 @@ const SUPABASE_PUBLISHABLE_KEY =
 
 const NVIDIA_API_KEY = process.env.NVIDIA_API_KEY || "";
 const NVIDIA_API_BASE_URL = (process.env.NVIDIA_API_BASE_URL || "https://integrate.api.nvidia.com/v1").replace(/\/+$/, "");
+const NVIDIA_UPSTREAM_TIMEOUT_MS = Number(process.env.NVIDIA_UPSTREAM_TIMEOUT_MS || 45000);
 const DEFAULT_NVIDIA_MODELS = [
   "nvidia/llama-3.1-nemotron-nano-8b-v1",
   "nvidia/llama-3.1-nemotron-ultra-253b-v1",
@@ -204,14 +205,27 @@ async function handleNvidiaChat(req, res) {
     stream: false
   };
 
-  const upstream = await fetch(`${NVIDIA_API_BASE_URL}/chat/completions`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${NVIDIA_API_KEY}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(payload)
-  });
+  let upstream;
+  try {
+    upstream = await fetch(`${NVIDIA_API_BASE_URL}/chat/completions`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${NVIDIA_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(NVIDIA_UPSTREAM_TIMEOUT_MS)
+    });
+  } catch (error) {
+    const isTimeout = error && (error.name === "TimeoutError" || error.name === "AbortError");
+    sendJson(res, isTimeout ? 504 : 502, {
+      error: "NVIDIA API 暫時沒有回應。",
+      details: isTimeout
+        ? `上游等待超時（${NVIDIA_UPSTREAM_TIMEOUT_MS}ms）。請稍後再試，或先換一個模型。`
+        : (error.message || "Unable to reach NVIDIA API.")
+    });
+    return;
+  }
 
   const rawText = await upstream.text();
   let data = null;
