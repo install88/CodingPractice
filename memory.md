@@ -6,7 +6,10 @@
 - Primary workflow is backlog-style cards, not date-based homework.
 
 ## Current App Shape
-- Frontend: single-file app in `index.html`.
+- Frontend shell: `index.html`.
+- Frontend styles: `assets/css/app.css`.
+- Frontend app logic: `assets/js/app.js`.
+- Card / curriculum data: `assets/js/cards-data.js`.
 - Backend: lightweight Node server in `server.js`.
 - Hosting: Render Web Service.
 - Data:
@@ -40,6 +43,7 @@
 - Frontend has:
   - small side-panel assistant
   - full-page chat view that feels closer to ChatGPT/Codex
+  - left sidebar card navigator, so cards can be switched directly like a workspace inbox
 - Full-page chat supports:
   - per-card conversation context
   - model switching
@@ -62,9 +66,10 @@
 ## Known UX / Tech Notes
 - General browser mode may be affected by extensions; Incognito once helped isolate auth issues.
 - AI chat is not yet stored in Supabase.
-- `index.html` is large and still carries most UI logic inline.
+- `Enter` sends AI chat messages; `Shift + Enter` keeps newline.
+- The app now uses a persistent left sidebar for card switching.
 - A future cleanup path would be:
-  - split data / UI / styles
+  - split `assets/js/app.js` further into auth / progress / ai / board modules
   - move AI conversation persistence into Supabase
 
 ## Recent Important Commits
@@ -74,6 +79,5 @@
 - `5fedc6f` Add NVIDIA request timeouts
 - `7052fa5` Add full-page NVIDIA chat experience
 
-## Latest Local-Only Change (not yet committed when this file was written)
-- Pressing `Enter` in AI prompt/chat now sends the message.
-- `Shift + Enter` keeps newline behavior.
+## Latest Local-Only Change
+- None at the time this memory file was last updated; current working tree should be the new layered frontend shape.
