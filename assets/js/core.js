@@ -776,6 +776,10 @@ function updateSidebarFilter(value) {
   localStorage.setItem(sidebarFilterKey(), sidebarFilter);
 }
 
+function getCurrentCard() {
+  return ALL_CARDS[selectedCardIndex] || ALL_CARDS[0] || null;
+}
+
 function cardSearchText(card) {
   return [
     `#${card.cardNo}`,
