@@ -71,6 +71,7 @@
 - AI chat is not yet stored in Supabase.
 - `Enter` sends AI chat messages; `Shift + Enter` keeps newline.
 - The app now uses a persistent left sidebar for card switching.
+- If Supabase local auth storage contains a stale refresh token, frontend should now clear the broken token and fall back to the login screen instead of staying stuck in bootstrap errors.
 - A future cleanup path would be:
   - split `assets/js/core.js` further into auth / progress / storage / shared-ui modules
   - move AI conversation persistence into Supabase
@@ -83,4 +84,4 @@
 - `7052fa5` Add full-page NVIDIA chat experience
 
 ## Latest Local-Only Change
-- None at the time this memory file was last updated; current working tree should be the new layered frontend shape.
+- Added refresh-token recovery in `assets/js/core.js` and switched NVIDIA chat session reads in `assets/js/ai.js` to use the same recovery helper.

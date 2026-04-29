@@ -173,6 +173,33 @@ function usernameToEmail(username) {
   const normalized = normalizeUsername(username).toLowerCase();
   return normalized ? `${normalized}@${AUTH_EMAIL_DOMAIN}` : "";
 }
+function isInvalidRefreshTokenError(error) {
+  const message = String(error?.message || error || "").toLowerCase();
+  return message.includes("invalid refresh token") || message.includes("refresh token not found");
+}
+function supabaseProjectRef() {
+  try {
+    return new URL(SUPABASE_URL).hostname.split(".")[0] || "";
+  } catch {
+    return "";
+  }
+}
+function clearStoredSupabaseAuth() {
+  const projectRef = supabaseProjectRef();
+  if (!projectRef) return;
+  const prefixes = [`sb-${projectRef}-auth-token`, `sb-${projectRef}-auth-token-code-verifier`];
+  [window.localStorage, window.sessionStorage].forEach(store => {
+    if (!store) return;
+    const keys = [];
+    for (let index = 0; index < store.length; index += 1) {
+      const key = store.key(index);
+      if (key && prefixes.some(prefix => key === prefix || key.startsWith(prefix))) {
+        keys.push(key);
+      }
+    }
+    keys.forEach(key => store.removeItem(key));
+  });
+}
 function setErrorBox(message) {
   const box = document.getElementById("authErrorBox");
   if (!message) {
@@ -610,6 +637,49 @@ function sessionKey(session) {
   return session.access_token || `${session.user?.id || ""}:${session.expires_at || ""}`;
 }
 
+async function resetExpiredSupabaseSession(message = "登入狀態已過期，請重新登入。") {
+  window.clearTimeout(syncTimer);
+  syncTimer = 0;
+  clearStoredSupabaseAuth();
+  try {
+    if (supabaseClient?.auth?.signOut) {
+      await supabaseClient.auth.signOut({ scope: "local" });
+    }
+  } catch (error) {
+    console.warn("Local Supabase sign-out failed during session reset.", error);
+  }
+  setErrorBox(message);
+  setAuthStatus("尚未登入。");
+  setAuthStatus("尚未註冊。", "registerStatus");
+  showLoggedOutState();
+}
+
+async function getSupabaseSessionOrRecover(options = {}) {
+  if (!supabaseClient?.auth?.getSession) {
+    return {
+      session: null,
+      error: new Error("Supabase 尚未初始化完成。")
+    };
+  }
+
+  try {
+    const { data, error } = await supabaseClient.auth.getSession();
+    if (error) throw error;
+    return {
+      session: data?.session || null,
+      error: null
+    };
+  } catch (error) {
+    if (isInvalidRefreshTokenError(error)) {
+      await resetExpiredSupabaseSession(options.expiredMessage || "登入狀態已過期，舊的登入資料已清除，請重新登入。");
+    }
+    return {
+      session: null,
+      error
+    };
+  }
+}
+
 async function handleSignedInSession(session) {
   currentSession = session;
   currentAuthUser = session.user;
@@ -702,10 +772,15 @@ async function initSupabaseAuth() {
   });
 
   try {
-    const { data, error } = await supabaseClient.auth.getSession();
-    if (error) throw error;
     authBootstrapComplete = true;
-    if (data.session) await hydrateSignedInSession(data.session);
+    const { session, error } = await getSupabaseSessionOrRecover({
+      expiredMessage: "登入狀態已過期，舊的登入資料已清除，請重新登入。"
+    });
+    if (error) {
+      if (isInvalidRefreshTokenError(error)) return;
+      throw error;
+    }
+    if (session) await hydrateSignedInSession(session);
     else showLoggedOutState();
   } catch (error) {
     console.error(error);

@@ -338,14 +338,16 @@ async function sendAiRequest(mode = "custom") {
   renderAiChatView();
 
   try {
-    const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
+    const { session, error: sessionError } = await getSupabaseSessionOrRecover({
+      expiredMessage: "登入狀態已過期，請重新登入後再使用 NVIDIA 助理。"
+    });
     if (sessionError) throw sessionError;
-    if (!sessionData.session?.access_token) {
+    if (!session?.access_token) {
       throw new Error("請先登入後再使用 NVIDIA 助理。");
     }
-    currentSession = sessionData.session;
-    currentAuthUser = sessionData.session.user;
-    supabaseUserId = sessionData.session.user?.id || supabaseUserId;
+    currentSession = session;
+    currentAuthUser = session.user;
+    supabaseUserId = session.user?.id || supabaseUserId;
 
     const requestBody = {
       model: document.getElementById("chatModelSelect")?.value || document.getElementById("aiModelSelect").value,
@@ -369,16 +371,18 @@ async function sendAiRequest(mode = "custom") {
       return request;
     };
 
-    let response = await createChatRequest(sessionData.session.access_token);
+    let response = await createChatRequest(session.access_token);
     let data = await response.json().catch(() => ({}));
 
     if (response.status === 401) {
-      const { data: retrySessionData } = await supabaseClient.auth.getSession();
-      if (retrySessionData.session?.access_token && retrySessionData.session.access_token !== sessionData.session.access_token) {
-        currentSession = retrySessionData.session;
-        currentAuthUser = retrySessionData.session.user;
-        supabaseUserId = retrySessionData.session.user?.id || supabaseUserId;
-        response = await createChatRequest(retrySessionData.session.access_token);
+      const { session: retrySession } = await getSupabaseSessionOrRecover({
+        expiredMessage: "登入狀態已過期，請重新登入後再使用 NVIDIA 助理。"
+      });
+      if (retrySession?.access_token && retrySession.access_token !== session.access_token) {
+        currentSession = retrySession;
+        currentAuthUser = retrySession.user;
+        supabaseUserId = retrySession.user?.id || supabaseUserId;
+        response = await createChatRequest(retrySession.access_token);
         data = await response.json().catch(() => ({}));
       }
     }
