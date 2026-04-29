@@ -8,7 +8,10 @@
 ## Current App Shape
 - Frontend shell: `index.html`.
 - Frontend styles: `assets/css/app.css`.
-- Frontend app logic: `assets/js/app.js`.
+- Frontend core/state/auth/progress: `assets/js/core.js`.
+- Frontend board rendering: `assets/js/board.js`.
+- Frontend AI chat rendering and requests: `assets/js/ai.js`.
+- Frontend event wiring/bootstrap: `assets/js/main.js`.
 - Card / curriculum data: `assets/js/cards-data.js`.
 - Backend: lightweight Node server in `server.js`.
 - Hosting: Render Web Service.
@@ -69,7 +72,7 @@
 - `Enter` sends AI chat messages; `Shift + Enter` keeps newline.
 - The app now uses a persistent left sidebar for card switching.
 - A future cleanup path would be:
-  - split `assets/js/app.js` further into auth / progress / ai / board modules
+  - split `assets/js/core.js` further into auth / progress / storage / shared-ui modules
   - move AI conversation persistence into Supabase
 
 ## Recent Important Commits
